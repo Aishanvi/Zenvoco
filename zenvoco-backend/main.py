@@ -50,9 +50,16 @@ async def live_server_access_control(request: Request, call_next):
     client_key = request.headers.get("X-Live-Server-Key")
     
     if client_key != server_key:
+        origin = request.headers.get("origin", "*")
         return JSONResponse(
             status_code=403,
-            content={"detail": "Unauthorized: Invalid or missing Live Server Access Key"}
+            content={"detail": "Unauthorized: Invalid or missing Live Server Access Key"},
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+            }
         )
         
     return await call_next(request)
