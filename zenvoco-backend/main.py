@@ -1,5 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+
+load_dotenv(dotenv_path=".env", verbose=True)
+print("🔥 ENV FILE LOADED")
+print("🔥 MONGO URI:", os.getenv("MONGO_URI"))
 
 # Explicit Router integration from distinct application spaces
 from routes import auth_routes
