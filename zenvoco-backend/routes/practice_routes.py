@@ -29,7 +29,7 @@ async def start_practice_session(
         "session_id": str(result.inserted_id)
     }
 
-@router.post("/upload")
+@router.post("/submit")
 async def upload_speech_audio(
     session_id: str = Form(...), 
     audio: UploadFile = File(...), 
@@ -54,35 +54,38 @@ async def upload_speech_audio(
     transcription = await process_audio_transcription(temp_media_path)
     analysis_data = await process_generative_feedback(transcription)
     
+    # Safely extract the inner evaluation dictionary
+    ai_eval = analysis_data.get("ai_evaluation", {})
+
     # Mirror results inside Main Session Collection History
     update_data = {
         "audio_file": temp_media_path,
         "transcription": transcription,
-        "ai_feedback": analysis_data.get("ai_feedback"),
-        "confidence_score": analysis_data.get("confidence_score")
+        "ai_feedback": ai_eval.get("ai_feedback"),
+        "confidence_score": ai_eval.get("confidence_score")
     }
     await practice_collection.update_one({"_id": ObjectId(session_id)}, {"$set": update_data})
     
     # Store analytical factors inside distinct isolated Collection
     granular_entry = {
         "session_id": session_id,
-        "speech_clarity": analysis_data.get("speech_clarity"),
-        "filler_words": analysis_data.get("filler_words"),
-        "pace": analysis_data.get("pace"),
-        "grammar_score": analysis_data.get("grammar_score"),
-        "confidence_score": analysis_data.get("confidence_score")
+        "speech_clarity": ai_eval.get("speech_clarity"),
+        "filler_words": ai_eval.get("filler_words"),
+        "pace": ai_eval.get("pace"),
+        "grammar_score": ai_eval.get("grammar_score"),
+        "confidence_score": ai_eval.get("confidence_score")
     }
     await speech_collection.insert_one(granular_entry)
     
     # Force generic Confidence mapping curve increment to users global Progress chart.
     await progress_collection.insert_one({
         "user_id": user_id,
-        "confidence_score": analysis_data.get("confidence_score"),
+        "confidence_score": ai_eval.get("confidence_score"),
         "date": datetime.utcnow()
     })
     
     return {
         "status": "Inference Complete",
         "transcription_detected": transcription,
-        "ai_evaluation": analysis_data
+        "ai_evaluation": ai_eval
     }
