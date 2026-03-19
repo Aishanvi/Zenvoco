@@ -77,8 +77,9 @@ const GuidedPractice = () => {
       const formData = new FormData();
 
       formData.append("file", audioBlob, "speech.webm");
+      const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "https://zenvoco.onrender.com");
 
-      const response = await fetch("http://127.0.0.1:8000/practice/upload", {
+      const response = await fetch(`${API_BASE_URL}/practice/upload`, {
 
         method: "POST",
 

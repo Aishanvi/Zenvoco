@@ -9,8 +9,9 @@ const Dashboard = () => {
     const fetchDashboard = async () => {
       try {
         const token = localStorage.getItem("token");
+        const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://127.0.0.1:8000" : "https://zenvoco.onrender.com");
 
-        const response = await fetch("http://127.0.0.1:8000/dashboard/user", {
+        const response = await fetch(`${API_BASE_URL}/dashboard/user`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
