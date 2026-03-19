@@ -6,7 +6,7 @@ load_dotenv()
 
 class Settings:
     PROJECT_NAME = "Zenvoco API"
-    MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+    MONGO_URI = os.getenv("MONGO_URI")
     JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-key")
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")

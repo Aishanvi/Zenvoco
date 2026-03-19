@@ -3,7 +3,7 @@ from config.settings import settings
 
 # Initialize Motor (MongoDB Async Driver)
 client = AsyncIOMotorClient(settings.MONGO_URI)
-db = client.Zenvoco_db
+db = client["Zenvoco_db"]
 
 # Connecting to corresponding collections matching JSONs
 users_collection = db["users"]

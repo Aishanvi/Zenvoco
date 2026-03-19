@@ -1,11 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 
-load_dotenv(dotenv_path=".env", verbose=True)
-print("🔥 ENV FILE LOADED")
-print("🔥 MONGO URI:", os.getenv("MONGO_URI"))
+load_dotenv()
 
 # Explicit Router integration from distinct application spaces
 from routes import auth_routes
@@ -22,19 +21,36 @@ app = FastAPI(
     version="2.0.0"
 )
 
-# Open Bridge for local UI development Cross-Origin boundaries
+# Restrict Cross-Origin boundaries to trusted frontends only
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173", 
-        "http://127.0.0.1:5173", 
-        "http://localhost:3000", 
-        "https://zenvoco.vercel.app"
+        "http://127.0.0.1:5173",
+        "https://zenvoco-frontend.vercel.app", # Adjust if using a different production URL
     ], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Live Server Access Control Middleware
+@app.middleware("http")
+async def live_server_access_control(request: Request, call_next):
+    # Allow unrestricted access to the health check and documentation
+    if request.url.path in ["/", "/docs", "/openapi.json", "/redoc"]:
+        return await call_next(request)
+    
+    server_key = os.getenv("LIVE_SERVER_API_KEY", "zenvoco-secure-key-24211a05le")
+    client_key = request.headers.get("X-Live-Server-Key")
+    
+    if client_key != server_key:
+        return JSONResponse(
+            status_code=403,
+            content={"detail": "Unauthorized: Invalid or missing Live Server Access Key"}
+        )
+        
+    return await call_next(request)
 
 # Application Endpoint Registrations
 app.include_router(auth_routes.router)
