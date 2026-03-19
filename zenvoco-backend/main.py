@@ -27,7 +27,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173", 
         "http://127.0.0.1:5173",
-        "https://zenvoco-frontend.vercel.app", # Adjust if using a different production URL
+        "https://zenvoco.vercel.app", # Vercel deployment URL
+        "https://zenvoco-frontend.vercel.app",
     ], 
     allow_credentials=True,
     allow_methods=["*"],
@@ -37,6 +38,10 @@ app.add_middleware(
 # Live Server Access Control Middleware
 @app.middleware("http")
 async def live_server_access_control(request: Request, call_next):
+    # Allow preflight CORS requests to pass through to CORSMiddleware
+    if request.method == "OPTIONS":
+        return await call_next(request)
+        
     # Allow unrestricted access to the health check and documentation
     if request.url.path in ["/", "/docs", "/openapi.json", "/redoc"]:
         return await call_next(request)
