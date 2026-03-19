@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from config.settings import settings
 import os
 
 load_dotenv()
@@ -38,15 +39,28 @@ app.add_middleware(
 # Live Server Access Control Middleware
 @app.middleware("http")
 async def live_server_access_control(request: Request, call_next):
+    public_paths = {
+        "/",
+        "/docs",
+        "/openapi.json",
+        "/redoc",
+        "/auth/login",
+        "/auth/register",
+    }
+
     # Allow preflight CORS requests to pass through to CORSMiddleware
     if request.method == "OPTIONS":
         return await call_next(request)
         
-    # Allow unrestricted access to the health check and documentation
-    if request.url.path in ["/", "/docs", "/openapi.json", "/redoc"]:
+    # Keep health/docs/auth endpoints publicly reachable.
+    if request.url.path in public_paths:
         return await call_next(request)
     
-    server_key = os.getenv("LIVE_SERVER_API_KEY", "zenvoco-secure-key-24211a05le")
+    # Only enforce the live server key when it is explicitly configured.
+    server_key = settings.LIVE_SERVER_API_KEY
+    if not server_key:
+        return await call_next(request)
+
     client_key = request.headers.get("X-Live-Server-Key")
     
     if client_key != server_key:

@@ -10,5 +10,6 @@ class Settings:
     JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-key")
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    LIVE_SERVER_API_KEY = os.getenv("LIVE_SERVER_API_KEY", "")
 
 settings = Settings()
