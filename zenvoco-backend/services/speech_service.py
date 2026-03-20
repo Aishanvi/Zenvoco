@@ -80,7 +80,8 @@ async def process_audio_transcription(file_path: str) -> str:
         print(f"Transcribing {file_path} via AssemblyAI...")
         # Run synchronous AssemblyAI call inside a thread to keep FastAPI non-blocking
         loop = asyncio.get_event_loop()
-        transcriber = aai.Transcriber()
+        config = aai.TranscriptionConfig(speech_models=["universal-2"])
+        transcriber = aai.Transcriber(config=config)
         transcript = await loop.run_in_executor(None, lambda: transcriber.transcribe(file_path))
         
         if transcript.status == aai.TranscriptStatus.error:
