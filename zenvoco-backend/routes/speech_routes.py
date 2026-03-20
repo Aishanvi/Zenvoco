@@ -2,8 +2,15 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from services.speech_service import process_audio_transcription, process_generative_feedback
 import os
 import shutil
+from pathlib import Path
 
 router = APIRouter(prefix="/speech", tags=["Speech Analysis"])
+
+
+def _safe_audio_path(file_name: str) -> str:
+    original_name = Path(file_name or "audio.webm").name
+    extension = Path(original_name).suffix or ".webm"
+    return f"uploads/tmp_{Path(original_name).stem}{extension}"
 
 @router.post("/analyze")
 async def process_speech_one_off(
@@ -23,10 +30,15 @@ async def process_speech_one_off(
         raise HTTPException(status_code=400, detail=f"Unsupported audio format: {audio.content_type}")
 
     os.makedirs("uploads", exist_ok=True)
-    tmp_path = f"uploads/tmp_{audio.filename}"
+    tmp_path = _safe_audio_path(audio.filename)
     
     with open(tmp_path, "wb") as buffer:
         shutil.copyfileobj(audio.file, buffer)
+
+    if os.path.getsize(tmp_path) == 0:
+        if os.path.exists(tmp_path):
+            os.remove(tmp_path)
+        raise HTTPException(status_code=400, detail="Uploaded audio file is empty.")
         
     transcription = await process_audio_transcription(tmp_path)
     feedback_data = await process_generative_feedback(transcription)
