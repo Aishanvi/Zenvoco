@@ -1,5 +1,4 @@
-from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
-from auth.jwt_handler import get_current_user_id
+from fastapi import APIRouter, UploadFile, File, HTTPException
 from services.speech_service import process_audio_transcription, process_generative_feedback
 import os
 import shutil
@@ -8,8 +7,7 @@ router = APIRouter(prefix="/speech", tags=["Speech Analysis"])
 
 @router.post("/analyze")
 async def process_speech_one_off(
-    audio: UploadFile = File(...), 
-    user_id: str = Depends(get_current_user_id)
+    audio: UploadFile = File(...)
 ):
     """
     Allows executing a Whisper -> Generative AI Feedback Pipeline evaluation without
@@ -40,5 +38,6 @@ async def process_speech_one_off(
     return {
         "status": "success",
         "transcription_result": transcription,
+        "ai_evaluation": feedback_data.get("ai_evaluation", {}),
         "feedback_object": feedback_data
     }

@@ -47,6 +47,11 @@ async def live_server_access_control(request: Request, call_next):
         "/auth/login",
         "/auth/register",
     }
+    local_origins = {
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    }
+    local_hosts = {"127.0.0.1", "::1", "localhost"}
 
     # Allow preflight CORS requests to pass through to CORSMiddleware
     if request.method == "OPTIONS":
@@ -59,6 +64,11 @@ async def live_server_access_control(request: Request, call_next):
     # Only enforce the live server key when it is explicitly configured.
     server_key = settings.LIVE_SERVER_API_KEY
     if not server_key:
+        return await call_next(request)
+
+    request_origin = request.headers.get("origin")
+    request_host = request.client.host if request.client else None
+    if request_origin in local_origins or request_host in local_hosts:
         return await call_next(request)
 
     client_key = request.headers.get("X-Live-Server-Key")
