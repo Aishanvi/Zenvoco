@@ -67,6 +67,10 @@ async def upload_speech_audio(
         "duration": duration
     }
     await practice_collection.update_one({"_id": ObjectId(session_id)}, {"$set": update_data})
+
+    # Cleanup temp audio file from disk after processing (prevent accumulation)
+    if os.path.exists(temp_media_path):
+        os.remove(temp_media_path)
     
     # Store analytical factors inside distinct isolated Collection
     granular_entry = {
@@ -80,9 +84,13 @@ async def upload_speech_audio(
     await speech_collection.insert_one(granular_entry)
     
     # Force generic Confidence mapping curve increment to users global Progress chart.
+    # Also persist speech_clarity, pace, filler_words so Dashboard Avg Fluency is non-zero.
     await progress_collection.insert_one({
         "user_id": user_id,
         "confidence_score": ai_eval.get("confidence_score"),
+        "speech_clarity": ai_eval.get("speech_clarity"),
+        "pace": ai_eval.get("pace"),
+        "filler_words": ai_eval.get("filler_words"),
         "duration": duration,
         "date": datetime.utcnow()
     })

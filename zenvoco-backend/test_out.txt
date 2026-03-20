@@ -1,0 +1,14 @@
+Starting Backend API Tests...
+
+[1] Testing Health Index (GET /)
+Status: 200
+Response: {'system_status': 'Operational', 'description': 'Zenvoco Analytics Matrix Backend', 'docs': 'Navigate to /docs to enter Swagger UI'}
+
+[2] Testing Registration (POST /auth/register)
+Status: 422
+User might already exist. Output: {"detail":[{"type":"missing","loc":["body","name"],"msg":"Field required","input":{"email":"backend_test@example.com","password":"securepassword","full_name":"Test User"}}]}
+
+[3] Testing Login (POST /auth/login)
+Status: 422
+
+ A test failed!
