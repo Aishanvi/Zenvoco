@@ -24,11 +24,20 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
   const timerRef         = useRef(null);
   const startTimeRef     = useRef(null);
   const fileInputRef     = useRef(null);
+  const objectUrlRef     = useRef(null);
+
+  const cleanupObjectUrl = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
+    }
+  };
 
   // Clean up on unmount
   useEffect(() => () => {
     clearInterval(timerRef.current);
     stopMicStream();
+    cleanupObjectUrl();
   }, []);
 
   const fmtTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -44,6 +53,7 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
     clearInterval(timerRef.current);
     stopMicStream();
     setPhase("idle");
+    cleanupObjectUrl();
     setBlob(null);
     setFileName("");
     setElapsed(0);
@@ -111,26 +121,34 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
       return;
     }
 
-    // Use the File directly as Blob (no ArrayBuffer conversion needed)
+    cleanupObjectUrl();
     const url = URL.createObjectURL(file);
-    const audio = new Audio(url);
-    audio.addEventListener("loadedmetadata", () => {
-      const dur = isFinite(audio.duration) ? Math.round(audio.duration) : Math.round(file.size / 16000);
-      URL.revokeObjectURL(url);
+    objectUrlRef.current = url;
+
+    const audio = new Audio();
+    audio.preload = "metadata";
+
+    const finalizeFile = (dur) => {
+      audio.src = "";
       setBlob(file);
+      setElapsed(dur);
       setFileName(file.name);
       setPhase("ready");
       onAudioReady?.(file, dur);
-    });
+    };
+
+    audio.addEventListener("loadedmetadata", () => {
+      const dur = isFinite(audio.duration) ? Math.round(audio.duration) : Math.round(file.size / 16000);
+      finalizeFile(dur);
+    }, { once: true });
+
     audio.addEventListener("error", () => {
       // Fallback if browser can't decode metadata
       const dur = Math.round(file.size / 16000);
-      URL.revokeObjectURL(url);
-      setBlob(file);
-      setFileName(file.name);
-      setPhase("ready");
-      onAudioReady?.(file, dur);
-    });
+      finalizeFile(dur);
+    }, { once: true });
+
+    audio.src = url;
   };
 
   const onFileChange = (e) => processFile(e.target.files[0]);

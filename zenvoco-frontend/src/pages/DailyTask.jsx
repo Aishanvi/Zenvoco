@@ -224,7 +224,7 @@ const DailyTask = () => {
               </h4>
               <p className="text-xl text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
               <div className="mt-6 pt-6 border-t border-gray-800">
-                <p className="text-sm text-gray-500 font-medium">Duration recorded: <span className="text-gray-300">{fmtTime(elapsed)}</span></p>
+                <p className="text-sm text-gray-500 font-medium">Duration recorded: <span className="text-gray-300">{fmtTime(audioDur)}</span></p>
               </div>
             </div>
 
