@@ -1,4 +1,4 @@
-import whisper
+import assemblyai as aai
 import google.generativeai as genai
 from config.settings import settings
 import json
@@ -11,11 +11,9 @@ genai.configure(api_key=settings.GEMINI_API_KEY)
 # We use gemini-flash-latest for stable free-tier access
 gemini_model = genai.GenerativeModel('gemini-flash-latest')
 
-# ─── LOCAL AUDIO CONFIG (Whisper) ─────────────────────────────────────────────
-# We load the "base" model - it's a good trade-off between speed and accuracy
-# Loads into CPU/RAM (approx 150MB)
-print("Loading Local Whisper (base)...")
-whisper_model = whisper.load_model("base")
+# ─── CLOUD AUDIO CONFIG (AssemblyAI) ───────────────────────────────────────────
+aai.settings.api_key = settings.ASSEMBLYAI_API_KEY
+
 
 FILLER_WORD_PATTERN = re.compile(
     r"\b(um|uh|like|you know|basically|actually|literally|so)\b",
@@ -68,24 +66,33 @@ def _build_local_feedback(transcription: str, reason: str | None = None) -> dict
         }
     }
 
-# STEP 1: AUDIO -> TEXT (Local Whisper)
+# STEP 1: AUDIO -> TEXT (AssemblyAI)
 async def process_audio_transcription(file_path: str) -> str:
-    """Uses Local Whisper 'base' model to transcribe audio files"""
+    """Uses AssemblyAI to transcribe audio files"""
     if not os.path.exists(file_path):
         return "Audio file not found."
 
+    if not settings.ASSEMBLYAI_API_KEY:
+        print("AssemblyAI Key missing.")
+        return "Audio transcription failed due to missing API key."
+
     try:
-        # whisper.transcribe is a blocking call, we run it in a thread to keep FastAPI responsive
-        print(f"Transcribing {file_path} locally...")
+        print(f"Transcribing {file_path} via AssemblyAI...")
+        # Run synchronous AssemblyAI call inside a thread to keep FastAPI non-blocking
         loop = asyncio.get_event_loop()
-        result = await loop.run_in_executor(None, lambda: whisper_model.transcribe(file_path))
+        transcriber = aai.Transcriber()
+        transcript = await loop.run_in_executor(None, lambda: transcriber.transcribe(file_path))
         
-        text = result.get("text", "").strip()
+        if transcript.status == aai.TranscriptStatus.error:
+            print(f"AssemblyAI Error: {transcript.error}")
+            return "Audio transcription failed."
+
+        text = transcript.text.strip() if transcript.text else ""
         print(f"Transcription Result: {text}")
         return text if text else "No speech detected."
 
     except Exception as e:
-        print(f"Local Whisper Error: {e}")
+        print(f"AssemblyAI processing error: {e}")
         return "Audio transcription failed."
 
 # STEP 2: TEXT -> AI FEEDBACK (Google Gemini)

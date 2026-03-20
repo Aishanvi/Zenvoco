@@ -11,6 +11,7 @@ class Settings:
     JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+    ASSEMBLYAI_API_KEY = os.getenv("ASSEMBLYAI_API_KEY", "")
     LIVE_SERVER_API_KEY = os.getenv("LIVE_SERVER_API_KEY", "")
 
 settings = Settings()

@@ -28,19 +28,18 @@ async def test_gemini():
     else:
         print(f"[FAILED] STAGE 1: Gemini returned fallback feedback. Error: {eval_data.get('fallback_reason')}")
 
-async def test_whisper_load():
-    print("\n--- STAGE 2: Testing Local Whisper Load ---")
+async def test_assembly_load():
+    print("\n--- STAGE 2: Testing AssemblyAI Connect ---")
     try:
-        import whisper
-        print("Loading Whisper 'base' model...")
-        t0 = time.time()
-        # Non-blocking model load for test
-        model = whisper.load_model("base")
-        elapsed = round(time.time() - t0, 2)
-        print(f"[SUCCESS] STAGE 2: Whisper loaded in {elapsed}s")
+        import assemblyai as aai
+        if not aai.settings.api_key:
+            print("[FAILED] STAGE 2: AssemblyAI Key is missing in verify script (check settings)")
+            return False
+        # Do a quick check
+        print("[SUCCESS] STAGE 2: AssemblyAI Key loaded successfully")
         return True
     except Exception as e:
-        print(f"[FAILED] STAGE 2: Could not load Whisper. Error: {e}")
+        print(f"[FAILED] STAGE 2: Could not load AssemblyAI. Error: {e}")
         return False
 
 async def main():
@@ -55,8 +54,8 @@ async def main():
     # 1. Test Gemini
     await test_gemini()
     
-    # 2. Test Whisper
-    await test_whisper_load()
+    # 2. Test AssemblyAI
+    await test_assembly_load()
     
     print("\n" + "=" * 60)
     print("Verification Complete!")

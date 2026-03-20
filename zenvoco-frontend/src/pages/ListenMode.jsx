@@ -13,7 +13,7 @@ const EXAMPLES = [
     duration: "1:20",
     description: "A confident, structured self-introduction for an interview or networking setting.",
     transcript:
-      "Good morning... thank you for giving me this opportunity.<br />My name is Riya, and I am currently pursuing my Bachelor’s degree in Computer Science Engineering.<br />I have a strong interest in learning new technologies and improving my skills. I enjoy working on projects that help me apply my knowledge to real-world problems.<br />Over time, I have developed skills such as problem-solving, communication, and teamwork, which help me work effectively in different situations.<br />I consider myself a quick learner, adaptable, and always willing to take on new challenges.<br />I am really excited about this opportunity as it allows me to grow both personally and professionally.<br />Thank you.",
+      "Good morning... thank you for giving me this opportunity.\nMy name is Riya, and I am currently pursuing my Bachelor’s degree in Computer Science Engineering.\nI have a strong interest in learning new technologies and improving my skills. I enjoy working on projects that help me apply my knowledge to real-world problems.\nOver time, I have developed skills such as problem-solving, communication, and teamwork, which help me work effectively in different situations.\nI consider myself a quick learner, adaptable, and always willing to take on new challenges.\nI am really excited about this opportunity as it allows me to grow both personally and professionally.\nThank you.",
     insights: [
       { label: "Strong Opening", text: "Opens with name and institution — no 'ums' or hesitation.", color: "text-green-400" },
       { label: "Quantified Impact", text: "Uses 'thousands of daily users' — specific and credible.", color: "text-blue-400" },
@@ -31,42 +31,7 @@ const EXAMPLES = [
     badgeColor: "bg-blue-500/20 text-blue-400 border border-blue-500/30",
     duration: "1:45",
     description: "A behavioural interview answer using the STAR framework for a leadership question.",
-    transcript:
-      `Interviewer: Good morning. Please have a seat.
-
-Student: Good morning, sir. Thank you.
-
-Interviewer: Let’s start with a quick introduction. Tell me about yourself.
-
-Student: Certainly. My name is Aishanvi, and I am currently pursuing my Bachelor’s degree in Computer Science Engineering. I have a strong interest in artificial intelligence and full-stack development. Over time, I have worked on projects that focus on solving real-world problems, which helped me strengthen both my technical and problem-solving skills.
-
-Interviewer: That sounds good. Can you explain one project that you are particularly proud of?
-
-Student: Yes, one project I am proud of is a web-based application designed to improve communication confidence using artificial intelligence. The system analyzes speech and provides feedback on parameters like fluency, clarity, and speaking pace. Through this project, I gained hands-on experience in integrating frontend and backend technologies, as well as working with real-time data processing.
-
-Interviewer: Interesting. What challenges did you face while building this project?
-
-Student: One of the main challenges was ensuring accurate speech analysis. Initially, the results were inconsistent, so I had to explore different approaches and refine the implementation. This helped me understand the importance of testing and continuous improvement.
-
-Interviewer: Good. What are your strengths?
-
-Student: I would say my biggest strength is my ability to learn quickly and adapt to new technologies. I am also a good team player and believe in clear communication and collaboration.
-
-Interviewer: And what is one weakness you are working on?
-
-Student: I used to focus too much on perfection, which sometimes affected my speed. However, I am actively improving my time management and prioritization skills.
-
-Interviewer: Why should we hire you?
-
-Student: I believe I am a good fit for this role because I have a strong technical foundation and a genuine interest in learning and growing. I am dedicated, adaptable, and always ready to take initiative.
-
-Interviewer: Do you have any questions for us?
-
-Student: Yes, I would like to know more about the opportunities for learning and growth within your organization.
-
-Interviewer: That’s a good question. We’ll discuss that. Thank you.
-
-Student: Thank you, sir.`,
+    transcript: `Interviewer: Good morning. Please have a seat.\nStudent: Good morning, sir. Thank you.\nInterviewer: Let’s start with a quick introduction. Tell me about yourself.\nStudent: Certainly. My name is Aishanvi, and I am currently pursuing my Bachelor’s degree in Computer Science Engineering. I have a strong interest in artificial intelligence and full-stack development. Over time, I have worked on projects that focus on solving real-world problems, which helped me strengthen both my technical and problem-solving skills.\nInterviewer: That sounds good. Can you explain one project that you are particularly proud of?\nStudent: Yes, one project I am proud of is a web-based application designed to improve communication confidence using artificial intelligence. The system analyzes speech and provides feedback on parameters like fluency, clarity, and speaking pace. Through this project, I gained hands-on experience in integrating frontend and backend technologies, as well as working with real-time data processing.\nInterviewer: Interesting. What challenges did you face while building this project?\nStudent: One of the main challenges was ensuring accurate speech analysis. Initially, the results were inconsistent, so I had to explore different approaches and refine the implementation. This helped me understand the importance of testing and continuous improvement.\nInterviewer: Good. What are your strengths?\nStudent: I would say my biggest strength is my ability to learn quickly and adapt to new technologies. I am also a good team player and believe in clear communication and collaboration.\nInterviewer: And what is one weakness you are working on?\nStudent: I used to focus too much on perfection, which sometimes affected my speed. However, I am actively improving my time management and prioritization skills.\nInterviewer: Why should we hire you?\nStudent: I believe I am a good fit for this role because I have a strong technical foundation and a genuine interest in learning and growing. I am dedicated, adaptable, and always ready to take initiative.\nInterviewer: Do you have any questions for us?\nStudent: Yes, I would like to know more about the opportunities for learning and growth within your organization.\nInterviewer: That’s a good question. We’ll discuss that. Thank you.\nStudent: Thank you, sir.`,
     insights: [
       { label: "Clear Situation", text: "Stakes are established immediately — dropped members, deadline pressure.", color: "text-green-400" },
       { label: "'I' not 'We'", text: "Clearly owns the actions — 'I stepped up', 'I created', 'I set up'.", color: "text-blue-400" },
@@ -84,20 +49,7 @@ Student: Thank you, sir.`,
     badgeColor: "bg-purple-500/20 text-purple-400 border border-purple-500/30",
     duration: "0:45",
     description: "A hook-driven opening for a technical presentation that grabs attention instantly.",
-    transcript:
-      `Good morning everyone...
-
-First of all, thank you for giving me this opportunity.
-
-Today, I am going to talk about the impact of technology in our daily life.
-
-To begin with, technology has become an essential part of our lives and helps us in communication, learning, and daily tasks.
-
-Moving on, it also saves time and improves efficiency in many areas.
-
-Finally, to conclude, technology has made our lives easier, and its impact will continue to grow in the future.
-
-Thank you.`,
+    transcript: `Good morning everyone...\nFirst of all, thank you for giving me this opportunity.\nToday, I am going to talk about the impact of technology in our daily life.\nTo begin with, technology has become an essential part of our lives and helps us in communication, learning, and daily tasks.\nMoving on, it also saves time and improves efficiency in many areas.\nFinally, to conclude, technology has made our lives easier, and its impact will continue to grow in the future.\nThank you.`,
     insights: [
       { label: "Vivid Hook", text: "Opens with a scenario the audience can feel — not a statistic, but an experience.", color: "text-green-400" },
       { label: "Relevance Bridge", text: "Connects immediately to the audience's own situation (their interviews, their speaking).", color: "text-blue-400" },
