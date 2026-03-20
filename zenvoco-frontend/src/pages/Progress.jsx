@@ -114,7 +114,7 @@ const Progress = () => {
                   progressData.timeline_metrics.slice().reverse().map((session, i) => (
                     <tr key={i} className="border-b border-gray-800/50 hover:bg-black/20 transition-colors">
                       <td className="py-5 font-medium">{new Date(session.date).toLocaleDateString()}</td>
-                      <td>Practice Session</td>
+                      <td className="text-gray-300 max-w-xs truncate">{session.topic || "Practice Session"}</td>
                       <td className="text-blue-400 font-bold">{session.confidence_score}%</td>
                       <td className="text-purple-400 font-medium">{session.duration ? `${Math.floor(session.duration/60)}m ${session.duration%60}s` : "-"}</td>
                       <td className="text-right"><button className="text-blue-500 hover:text-white transition-colors">Review</button></td>

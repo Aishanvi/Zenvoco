@@ -90,8 +90,12 @@ const Dashboard = () => {
           <h3 className="text-gray-400 font-medium">Avg Fluency</h3>
 
           <p className="text-4xl font-bold mt-2 text-white">
-            {/* Mocked for now, not directly returned in overview */}
-            85
+            {dashboardData.metrics_preview && dashboardData.metrics_preview.length > 0
+              ? Math.round(
+                  dashboardData.metrics_preview.reduce((sum, m) => sum + (m.speech_clarity || 0), 0) /
+                  dashboardData.metrics_preview.length
+                )
+              : 0}
             <span className="text-xl text-purple-500">%</span>
           </p>
         </div>

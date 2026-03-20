@@ -28,7 +28,7 @@ const SpeechResult = () => {
         </div>
 
         {/* Score Overview */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 text-center hover:border-blue-500/50 transition-all">
             <p className="text-blue-500 text-3xl mb-2">🏆</p>
             <p className="text-4xl font-bold text-white mb-2">{aiObj.confidence_score || 0}<span className="text-xl text-blue-500">%</span></p>
@@ -45,6 +45,12 @@ const SpeechResult = () => {
             <p className="text-purple-500 text-3xl mb-2">💎</p>
             <p className="text-4xl font-bold text-white mb-2">{aiObj.pace || 0}<span className="text-xl text-purple-500">%</span></p>
             <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">Pace</p>
+          </div>
+
+          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 text-center hover:border-yellow-500/50 transition-all">
+            <p className="text-yellow-400 text-3xl mb-2">📝</p>
+            <p className="text-4xl font-bold text-white mb-2">{aiObj.grammar_score || 0}<span className="text-xl text-yellow-400">%</span></p>
+            <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">Grammar</p>
           </div>
 
           <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 text-center hover:border-red-500/50 transition-all">
@@ -90,8 +96,11 @@ const SpeechResult = () => {
           </div>
         </div>
 
-        {/* Action Button */}
-        <div className="text-center pt-6">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap justify-center gap-4 pt-6">
+          <Link to="/practice" className="inline-block px-10 py-5 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 text-white rounded-xl font-bold transition-all hover:-translate-y-1">
+            🎙️ Practice Again
+          </Link>
           <Link to="/dashboard" className="inline-block px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]">
             Back to Dashboard
           </Link>
