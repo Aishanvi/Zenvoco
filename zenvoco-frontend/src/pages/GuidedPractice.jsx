@@ -1,96 +1,80 @@
-import React, { useState, memo, useCallback } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layout/DashboardLayout";
 import API from "../api/api";
 import AudioInput from "../components/AudioInput";
 
+// ─── Practice topic bank ──────────────────────────────────────────────────────
 const TOPICS = [
   {
     label: "Describe a challenging situation you faced and how you handled it.",
     category: "Behavioural",
-    color: "blue",
+    color: "border-blue-500/50 bg-blue-500/5",
+    badge: "text-blue-400 bg-blue-500/10 border-blue-500/20",
     difficulty: "Moderate",
-    icon: "🧩"
   },
   {
     label: "Give a 60-second self-introduction for a professional setting.",
     category: "Introduction",
-    color: "green",
+    color: "border-green-500/50 bg-green-500/5",
+    badge: "text-green-400 bg-green-500/10 border-green-500/20",
     difficulty: "Beginner",
-    icon: "👤"
   },
   {
     label: "Open a 5-minute presentation on a technology you're passionate about.",
     category: "Presentation",
-    color: "purple",
+    color: "border-purple-500/50 bg-purple-500/5",
+    badge: "text-purple-400 bg-purple-500/10 border-purple-500/20",
     difficulty: "Advanced",
-    icon: "📊"
   },
   {
     label: "Describe a project you're proud of and explain the impact it had.",
     category: "Project Pitch",
-    color: "pink",
+    color: "border-yellow-500/50 bg-yellow-500/5",
+    badge: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20",
     difficulty: "Moderate",
-    icon: "🚀"
   },
   {
     label: "Answer: 'Where do you see yourself in 5 years?' clearly and confidently.",
     category: "Career",
-    color: "cyan",
+    color: "border-pink-500/50 bg-pink-500/5",
+    badge: "text-pink-400 bg-pink-500/10 border-pink-500/20",
     difficulty: "Beginner",
-    icon: "🗺️"
   },
 ];
 
-const TopicCard = memo(({ topic, onSelect }) => (
-  <button
-    onClick={() => onSelect(topic)}
-    className={`group w-full glass-card p-10 md:p-14 text-left border-2 border-transparent transition-all duration-500 hover:border-${topic.color}-500/50 hover:-translate-y-2 hover:bg-zinc-900 shadow-2xl animate-fade-in ring-1 ring-white/5`}
-  >
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
-      <div className="flex-1 space-y-6">
-        <div className="flex items-center gap-4">
-          <span className="text-3xl md:text-5xl group-hover:scale-125 transition-transform duration-500">{topic.icon}</span>
-          <span className={`px-5 py-2 rounded-full font-black text-[10px] md:text-xs tracking-[0.2em] uppercase bg-${topic.color}-500/10 text-${topic.color}-400 ring-1 ring-${topic.color}-500/20`}>
-            {topic.category}
-          </span>
-          <span className="text-zinc-600 font-bold uppercase tracking-widest text-[10px] md:text-xs italic">{topic.difficulty}</span>
-        </div>
-        <h3 className="text-2xl md:text-4xl font-black text-white italic leading-tight group-hover:text-${topic.color}-400 transition-colors">
-          "{topic.label}"
-        </h3>
-      </div>
-      <div className={`w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-2xl group-hover:bg-${topic.color}-500 group-hover:text-white group-hover:border-${topic.color}-500 transition-all duration-500 shrink-0`}>
-        →
-      </div>
-    </div>
-  </button>
-));
+const DIFFICULTY_COLOR = {
+  Beginner:  "text-green-400",
+  Moderate:  "text-yellow-400",
+  Advanced:  "text-red-400",
+};
 
 const GuidedPractice = () => {
   const navigate = useNavigate();
-  const [selectedTopic, setSelectedTopic] = useState(null);
-  const [audioBlob, setAudioBlob] = useState(null);
-  const [audioDuration, setAudioDuration] = useState(0);
-  const [uploading, setUploading] = useState(false);
 
-  const selectTopic = useCallback((topic) => {
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [audioBlob, setAudioBlob]         = useState(null);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [uploading, setUploading]         = useState(false);
+
+  const selectTopic = (topic) => {
     setSelectedTopic(topic);
     setAudioBlob(null);
     setAudioDuration(0);
-  }, []);
+  };
 
-  const handleAudioReady = useCallback((blob, dur) => {
+  const handleAudioReady = (blob, dur) => {
     setAudioBlob(blob);
     setAudioDuration(dur);
-  }, []);
+  };
 
+  // ── Submit to API ─────────────────────────────────────────────────────────
   const submitAudio = async () => {
     if (!audioBlob) return;
     setUploading(true);
     try {
       const sessionRes = await API.post("/practice/start", { topic: selectedTopic.label });
-      const sessionId = sessionRes.data.session_id;
+      const sessionId  = sessionRes.data.session_id;
 
       const formData = new FormData();
       formData.append("audio", audioBlob, "practice.webm");
@@ -109,109 +93,126 @@ const GuidedPractice = () => {
     }
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto py-10 px-4">
-        <header className="mb-20 animate-fade-in flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
+      <div className="max-w-4xl mx-auto space-y-10">
+
+        {/* Header */}
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h2 className="text-5xl md:text-8xl font-black tracking-tight mb-4 italic italic">
-              Guided <span className="premium-gradient-text not-italic">Practice</span>
-            </h2>
-            <p className="text-zinc-500 text-xl font-medium tracking-wide">
-              {selectedTopic 
-                ? `Topic Locked: ${selectedTopic.category}` 
-                : "Choose a curriculum item to initiate neural adaptation."}
+            <h2 className="text-4xl font-extrabold tracking-tight">Guided Practice</h2>
+            <p className="text-gray-400 mt-2">
+              {!selectedTopic
+                ? "Choose a topic, record your response, and get detailed AI feedback."
+                : `Topic: ${selectedTopic?.category}`}
             </p>
           </div>
           {selectedTopic && (
             <button
               onClick={() => { setSelectedTopic(null); setAudioBlob(null); }}
-              className="px-8 py-4 bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-white border border-white/5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 italic ring-1 ring-white/10"
+              className="text-sm text-gray-400 hover:text-white border border-gray-700 px-4 py-2 rounded-xl transition-all"
             >
-              ← Terminate Subject
+              ← Change Topic
             </button>
           )}
-        </header>
+        </div>
 
+        {/* ── Topic Selection ── */}
         {!selectedTopic && (
-          <div className="space-y-10 animate-fade-in">
-            <p className="text-blue-500 font-black text-xs uppercase tracking-[0.4em] mb-10 pl-2">Selection Logic: Pending Speaker Input</p>
+          <div className="space-y-4">
+            <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Choose a Speaking Topic</p>
             {TOPICS.map((topic, i) => (
-              <TopicCard key={i} topic={topic} onSelect={selectTopic} />
+              <button
+                key={i}
+                onClick={() => selectTopic(topic)}
+                className={`w-full text-left p-6 rounded-3xl border-2 transition-all duration-300 hover:-translate-y-0.5 ${topic.color} hover:shadow-lg`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <p className="text-white font-semibold text-lg leading-relaxed flex-1">
+                    "{topic.label}"
+                  </p>
+                  <span className="text-2xl mt-1">→</span>
+                </div>
+                <div className="flex items-center gap-3 mt-4">
+                  <span className={`text-xs px-3 py-1 rounded-full font-bold border ${topic.badge}`}>
+                    {topic.category}
+                  </span>
+                  <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[topic.difficulty]}`}>
+                    {topic.difficulty}
+                  </span>
+                </div>
+              </button>
             ))}
           </div>
         )}
 
+        {/* ── Recording + Submission (shown after topic picked) ── */}
         {selectedTopic && (
-          <div className="animate-fade-in space-y-16">
-            <div className={`glass-card p-12 md:p-24 border-l-8 border-${selectedTopic.color}-500 relative overflow-hidden ring-1 ring-white/5 shadow-2xl`}>
-               <div className={`absolute top-0 right-0 w-[400px] h-[400px] bg-${selectedTopic.color}-500/5 rounded-full blur-[100px] -z-10`} />
-               <div className="flex items-center gap-6 mb-10">
-                  <span className="text-5xl md:text-7xl">{selectedTopic.icon}</span>
-                  <div>
-                    <span className={`px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-[0.2em] bg-${selectedTopic.color}-500/10 text-${selectedTopic.color}-400 ring-1 ring-${selectedTopic.color}-500/20`}>
-                      {selectedTopic.category}
-                    </span>
-                    <p className="text-zinc-600 font-bold uppercase tracking-widest text-[10px] mt-2 pl-1 italic">{selectedTopic.difficulty}</p>
-                  </div>
-               </div>
-               <h3 className="text-3xl md:text-6xl font-black text-white italic leading-tight max-w-4xl">
-                 "{selectedTopic.label}"
-               </h3>
-               <p className="text-zinc-500 text-lg md:text-xl font-medium mt-10 max-w-2xl leading-relaxed italic">
-                 Observe the prompt. Record your transmission. We will synthesize performance metadata in real-time.
-               </p>
+          <>
+            {/* Topic display */}
+            <div className={`rounded-3xl p-8 border-2 ${selectedTopic.color}`}>
+              <div className="flex items-center gap-3 mb-4">
+                <span className={`text-xs px-3 py-1 rounded-full font-bold border ${selectedTopic.badge}`}>
+                  {selectedTopic.category}
+                </span>
+                <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[selectedTopic.difficulty]}`}>
+                  {selectedTopic.difficulty}
+                </span>
+              </div>
+              <h3 className="text-xl text-white font-semibold leading-relaxed">
+                📝 "{selectedTopic.label}"
+              </h3>
+              <p className="text-gray-400 text-sm mt-3">
+                Record your response with the microphone, or upload a pre-recorded audio file.
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-16 items-start">
-               <div className="lg:col-span-2 glass-card p-10 md:p-14 shadow-2xl border-white/5 ring-1 ring-white/10">
-                 <p className="text-sm font-black uppercase tracking-[0.2em] text-zinc-500 mb-10 italic">Input Transmission Controller</p>
-                 <AudioInput
-                    onAudioReady={handleAudioReady}
-                    onReset={() => { setAudioBlob(null); setAudioDuration(0); }}
-                    disabled={uploading}
-                 />
-                 {audioBlob && !uploading && (
-                    <div className="pt-16 animate-fade-in">
-                      <button
-                        onClick={submitAudio}
-                        className="w-full md:w-auto px-16 py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-2xl transition-all shadow-xl active:scale-95 italic ring-4 ring-blue-500/20"
-                      >
-                        Initiate Analysis Synthesis <span className="text-3xl ml-4">→</span>
-                      </button>
-                    </div>
-                 )}
-                 {uploading && (
-                  <div className="pt-16 flex items-center gap-6 animate-fade-in">
-                    <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin shadow-lg" />
-                    <span className="text-blue-500 font-black text-xl italic tracking-tight uppercase">Neural Synthesis in Progress...</span>
-                  </div>
-                 )}
-               </div>
+            {/* Audio capture */}
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 space-y-8">
+              <AudioInput
+                onAudioReady={handleAudioReady}
+                onReset={() => { setAudioBlob(null); setAudioDuration(0); }}
+                disabled={uploading}
+              />
 
-               <div className="glass-card p-10 md:p-14 bg-zinc-950/80 shadow-2xl border-white/5">
-                 <h4 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-600 mb-10 pl-1">💡 COGNITIVE ASSISTANT</h4>
-                 <ul className="space-y-10">
-                  <li className="flex gap-6 group">
-                    <span className="text-blue-500 font-black text-3xl transition-transform group-hover:scale-125 duration-500 italic">01</span>
-                    <p className="text-zinc-500 font-medium text-lg leading-relaxed group-hover:text-zinc-300 transition-colors">Articulate complete thought patterns — minimize divergence.</p>
-                  </li>
-                  <li className="flex gap-6 group">
-                    <span className="text-purple-500 font-black text-3xl transition-transform group-hover:scale-125 duration-500 italic">02</span>
-                    <p className="text-zinc-500 font-medium text-lg leading-relaxed group-hover:text-zinc-300 transition-colors">Leverage static pauses as structural reinforcement.</p>
-                  </li>
-                  <li className="flex gap-6 group">
-                    <span className="text-cyan-500 font-black text-3xl transition-transform group-hover:scale-125 duration-500 italic">03</span>
-                    <p className="text-zinc-500 font-medium text-lg leading-relaxed group-hover:text-zinc-300 transition-colors">Maintain Context → Action → Result hierarchy.</p>
-                  </li>
-                 </ul>
-               </div>
+              {/* Submit / spinner */}
+              {audioBlob && !uploading && (
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    onClick={submitAudio}
+                    className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                  >
+                    ✅ Finish & Analyse
+                  </button>
+                </div>
+              )}
+
+              {uploading && (
+                <div className="flex items-center gap-4">
+                  <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-blue-400 font-semibold">AI is analysing your response…</span>
+                </div>
+              )}
             </div>
-          </div>
+
+            {/* Tips panel */}
+            <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6">
+              <h4 className="text-sm uppercase tracking-widest text-gray-500 font-bold mb-4">💡 Quick Tips</h4>
+              <ul className="grid md:grid-cols-3 gap-4 text-sm text-gray-400">
+                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Speak in complete sentences — avoid trailing off.</span></li>
+                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Use pauses intentionally instead of filler words.</span></li>
+                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Structure your answer: Context → Action → Result.</span></li>
+              </ul>
+            </div>
+          </>
         )}
+
       </div>
     </DashboardLayout>
   );
 };
 
-export default memo(GuidedPractice);
+export default GuidedPractice;

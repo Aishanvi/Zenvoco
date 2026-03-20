@@ -1,8 +1,9 @@
-import React, { useState, memo, useCallback } from "react";
+import React, { useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
 import API from "../api/api";
 import AudioInput from "../components/AudioInput";
 
+// ─── Fixed question bank (4 questions per session) ───────────────────────────
 const VIVA_QUESTIONS = [
   "Tell me about a time you had to learn a new technology quickly to complete a project.",
   "Describe a situation where you had to collaborate with a difficult team member. How did you handle it?",
@@ -12,227 +13,303 @@ const VIVA_QUESTIONS = [
 
 const TOTAL_QUESTIONS = VIVA_QUESTIONS.length;
 
-const MetricCard = memo(({ label, value, unit, color }) => (
-  <div className="glass-card p-6 md:p-8 flex flex-col items-center text-center ring-1 ring-white/5 shadow-2xl animate-fade-in transition-all hover:scale-[1.03] group">
-    <h4 className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-zinc-500 mb-2 group-hover:text-zinc-300 transition-colors">{label}</h4>
-    <p className={`text-3xl md:text-5xl font-black italic tracking-tighter text-${color}-500 group-hover:drop-shadow-[0_0_10px_rgba(var(--primary),0.5)] transition-all`}>
-      {value}<span className="text-xl md:text-2xl ml-1 not-italic opacity-50">{unit}</span>
-    </p>
-  </div>
-));
-
-const BreakdownItem = memo(({ index, entry }) => (
-  <div className="glass-card p-8 md:p-14 mb-10 overflow-hidden relative group">
-    <div className="absolute top-0 right-0 w-64 h-64 bg-zinc-900/40 rounded-full blur-[80px] -z-10 transition-transform duration-1000 group-hover:scale-150 group-hover:opacity-60" />
-    <div className="flex flex-col md:flex-row gap-10">
-      <div className="flex-1">
-        <p className="text-blue-500 font-black text-xs uppercase tracking-[0.3em] mb-4">Question {index + 1}</p>
-        <h4 className="text-2xl md:text-4xl font-black italic text-white mb-6 leading-tight">"{entry.question}"</h4>
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 shrink-0">
-        <MetricCard label="Fluency" value={entry.metrics.speech_clarity} unit="%" color="green" />
-        <MetricCard label="Pace" value={entry.metrics.pace} unit="%" color="blue" />
-        <MetricCard label="Confidence" value={entry.metrics.confidence_score} unit="%" color="purple" />
-        <MetricCard label="Fillers" value={entry.metrics.filler_words} unit="X" color="red" />
-      </div>
-    </div>
-  </div>
-));
+// ─── Initial blank metrics state ─────────────────────────────────────────────
+const BLANK_METRICS = {
+  speech_clarity: "-",
+  confidence_score: "-",
+  pace: "-",
+  filler_words: "-",
+};
 
 const VivaSimulation = () => {
-  const [started, setStarted] = useState(false);
-  const [currentQ, setCurrentQ] = useState(0);
-  const [audioBlob, setAudioBlob] = useState(null);
+  const [started, setStarted]       = useState(false);
+  const [currentQ, setCurrentQ]     = useState(0);
+  const [audioBlob, setAudioBlob]   = useState(null);
   const [processing, setProcessing] = useState(false);
-  const [finished, setFinished] = useState(false);
-  const [inputKey, setInputKey] = useState(0);
-  const [allMetrics, setAllMetrics] = useState([]);
-  const [lastMetrics, setLastMetrics] = useState(null);
+  const [finished, setFinished]     = useState(false);
+  const [inputKey, setInputKey]     = useState(0); // force AudioInput remount between questions
 
-  const submitAnswer = useCallback(async () => {
+  const [allMetrics, setAllMetrics]   = useState([]);
+  const [liveMetrics, setLiveMetrics] = useState(BLANK_METRICS);
+
+  // ─── Analyse current answer then advance to next question ─────────────────
+  const submitAnswer = async () => {
     if (!audioBlob) return;
     setProcessing(true);
-    let metrics = { speech_clarity: 0, confidence_score: 0, pace: 0, filler_words: 0 };
+
+    let metrics = { ...BLANK_METRICS };
 
     try {
       const formData = new FormData();
       formData.append("audio", audioBlob, "answer.webm");
-      const response = await API.post("/speech/analyze", formData, { headers: { "Content-Type": "multipart/form-data" } });
+
+      const response = await API.post("/speech/analyze", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       const { feedback_object } = response.data;
-      if (feedback_object?.ai_evaluation) metrics = feedback_object.ai_evaluation;
+      if (feedback_object?.ai_evaluation) {
+        metrics = feedback_object.ai_evaluation;
+      }
     } catch (err) {
       console.error("Analysis failed:", err);
     }
 
+    // Store this question's metrics
     const updated = [...allMetrics, { question: VIVA_QUESTIONS[currentQ], metrics }];
     setAllMetrics(updated);
-    setLastMetrics(metrics);
+    setLiveMetrics(metrics);
     setAudioBlob(null);
 
     const nextQ = currentQ + 1;
     if (nextQ >= TOTAL_QUESTIONS) {
+      // All questions answered — show summary (keep liveMetrics showing last answer)
       setFinished(true);
     } else {
       setCurrentQ(nextQ);
-      setInputKey(k => k + 1);
+      setLiveMetrics(BLANK_METRICS); // reset only when advancing to next question
+      setInputKey((k) => k + 1);    // remount AudioInput for the next question
     }
+
     setProcessing(false);
-  }, [audioBlob, currentQ, allMetrics]);
+  };
 
-  const resetSession = useCallback(() => {
-    setStarted(false); setCurrentQ(0); setAudioBlob(null); setProcessing(false); setFinished(false);
-    setAllMetrics([]); setLastMetrics(null); setInputKey(k => k + 1);
-  }, []);
+  // ─── Reset entire session ─────────────────────────────────────────────────
+  const resetSession = () => {
+    setStarted(false);
+    setCurrentQ(0);
+    setAudioBlob(null);
+    setProcessing(false);
+    setFinished(false);
+    setAllMetrics([]);
+    setLiveMetrics(BLANK_METRICS);
+    setInputKey((k) => k + 1); // remount AudioInput
+  };
 
-  const avgScore = useCallback((key) => {
-    if (!allMetrics.length) return 0;
-    return Math.round(allMetrics.reduce((a, b) => a + (Number(b.metrics[key]) || 0), 0) / allMetrics.length);
-  }, [allMetrics]);
+  // ─── Derived helpers ──────────────────────────────────────────────────────
+  const avgScore = (key) => {
+    const vals = allMetrics.map((m) => Number(m.metrics[key]) || 0);
+    if (!vals.length) return 0;
+    return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+  };
 
+  // ═══════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ═══════════════════════════════════════════════════════════════════════════
   return (
     <DashboardLayout>
-      <div className="max-w-6xl mx-auto py-10 px-4">
-        <header className="mb-20 animate-fade-in flex flex-col md:flex-row justify-between items-start md:items-end gap-10">
-          <div>
-            <h2 className="text-5xl md:text-8xl font-black tracking-tight mb-4 italic italic">
-              Viva <span className="premium-gradient-text not-italic">Simulation</span>
-            </h2>
-            <p className="text-zinc-500 text-xl font-medium tracking-wide">Test your skills in a realistic AI mock interview environment.</p>
-          </div>
-          {started && !finished && (
-            <div className="flex items-center gap-4 bg-zinc-900 border border-white/5 rounded-3xl p-4 px-6 shadow-2xl ring-1 ring-white/10 italic font-black text-xl">
-              <span className="flex h-3 w-3 rounded-full bg-blue-500 animate-pulse" />
-              SESSION ACTIVE
-            </div>
-          )}
-        </header>
+      <div className="max-w-5xl mx-auto space-y-10">
 
+        {/* Page Header */}
+        <div>
+          <h2 className="text-4xl font-extrabold tracking-tight">Viva Simulation</h2>
+          <p className="text-gray-400 mt-2">Test your skills in a realistic AI mock interview session.</p>
+        </div>
+
+        {/* ── STATE 1: Intro splash ── */}
         {!started && !finished && (
-          <div className="glass-card p-12 md:p-32 text-center relative overflow-hidden group shadow-2xl border-white/5 animate-fade-in ring-1 ring-white/5">
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[150px] pointer-events-none group-hover:scale-110 transition-all duration-1000" />
-            <span className="text-8xl md:text-9xl mb-12 block group-hover:scale-110 transition-transform duration-500">🔥</span>
-            <h3 className="text-4xl md:text-7xl font-black mb-6 italic tracking-tight">Ready for the heat?</h3>
-            <p className="text-xl md:text-2xl text-zinc-500 mb-16 max-w-3xl mx-auto leading-relaxed px-4">
-              Face {TOTAL_QUESTIONS} high-pressure questions from our AI Interviewer. Maximize your focus, structure your thoughts, and speak with precision.
+          <div className="bg-gradient-to-br from-pink-500/10 to-transparent backdrop-blur-xl border border-pink-500/20 rounded-3xl p-16 text-center relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-[80px] group-hover:bg-pink-500/20 transition-all -z-10" />
+            <span className="text-7xl mb-8 block">🔥</span>
+            <h3 className="text-3xl font-bold mb-4 text-white">Ready for the heat?</h3>
+            <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+              You will be asked {TOTAL_QUESTIONS} questions by an AI interviewer. Record your answer to each, then submit to advance.
             </p>
             <button
               onClick={() => setStarted(true)}
-              className="px-16 py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-2xl transition-all shadow-[0_20px_40px_-15px_rgba(37,99,235,0.4)] hover:-translate-y-2 active:scale-95 group shadow-xl"
+              className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] hover:-translate-y-1"
             >
-              Start Simulation <span className="inline-block group-hover:translate-x-2 transition-transform italic text-3xl">→</span>
+              Start Simulation
             </button>
           </div>
         )}
 
+        {/* ── STATE 2: Active interview ── */}
         {started && !finished && (
-          <div className="space-y-20 animate-fade-in">
-            {/* PROGRESS TRACKER */}
-            <div className="space-y-6">
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-blue-500 font-black text-xs uppercase tracking-[0.3em] mb-2">Progress Mapping</p>
-                  <p className="text-3xl font-black text-white italic">Question {currentQ + 1} of {TOTAL_QUESTIONS}</p>
-                </div>
-                <p className="text-zinc-500 font-black text-xl tabular-nums italic">{Math.round((currentQ / TOTAL_QUESTIONS) * 100)}% COMPLETE</p>
+          <div className="space-y-8">
+
+            {/* Progress bar */}
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm text-gray-400 font-medium">
+                <span>Question {currentQ + 1} of {TOTAL_QUESTIONS}</span>
+                <span>{Math.round(((currentQ) / TOTAL_QUESTIONS) * 100)}% complete</span>
               </div>
-              <div className="h-4 bg-zinc-900 border border-white/5 rounded-full overflow-hidden shadow-inner p-1">
-                <div 
-                  className="h-full bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 rounded-full transition-all duration-1000 ease-out shadow-lg"
+              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-700"
                   style={{ width: `${(currentQ / TOTAL_QUESTIONS) * 100}%` }}
                 />
               </div>
             </div>
 
-            {/* AI PERSPECTIVE */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-              <div className="glass-card p-12 md:p-20 relative overflow-hidden animate-fade-in">
-                 <div className="absolute top-0 left-0 w-64 h-64 bg-blue-600/10 rounded-full blur-[80px] -z-10" />
-                 <div className="flex items-center gap-4 mb-10">
-                   <div className="h-12 w-12 rounded-xl bg-zinc-900 border border-white/5 flex items-center justify-center text-3xl">🤖</div>
-                   <h3 className="text-xl font-black uppercase tracking-[0.2em] text-zinc-500">Persona: Interviewer Matrix</h3>
-                 </div>
-                 <p className="text-3xl md:text-5xl font-black text-white leading-[1.1] italic">
-                   "{VIVA_QUESTIONS[currentQ]}"
-                 </p>
+            {/* Question Card */}
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 relative overflow-hidden group">
+              <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[60px] group-hover:bg-blue-500/20 transition-all -z-10" />
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-blue-400 flex items-center gap-2">
+                  <span>🤖</span> AI Interviewer
+                </h3>
+                <span className="bg-black/50 border border-gray-800 text-gray-400 px-4 py-1 rounded-full text-sm font-medium">
+                  Question {currentQ + 1} of {TOTAL_QUESTIONS}
+                </span>
               </div>
+              <p className="text-2xl font-medium text-white leading-relaxed">
+                "{VIVA_QUESTIONS[currentQ]}"
+              </p>
+            </div>
 
-              <div className="glass-card p-12 md:p-14 shadow-2xl border-white/10 ring-1 ring-blue-500/20">
-                <p className="text-sm font-black uppercase tracking-[0.2em] text-zinc-500 mb-10 italic">Secure Output Console</p>
-                <div className="mb-14">
-                  <AudioInput 
-                    key={inputKey} 
-                    onAudioReady={setAudioBlob} 
-                    onReset={() => setAudioBlob(null)} 
-                    disabled={processing}
-                    compact={true}
-                  />
+            {/* Audio capture — mic or upload */}
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-8">
+              <p className="text-lg text-gray-300 font-medium">
+                {processing
+                  ? "Analysing your answer…"
+                  : audioBlob
+                  ? "Answer ready. Submit when ready, or clear to redo."
+                  : "Record your answer with the mic, or upload a file."}
+              </p>
+
+              {!processing && (
+                <AudioInput
+                  key={inputKey}
+                  onAudioReady={(blob) => setAudioBlob(blob)}
+                  onReset={() => setAudioBlob(null)}
+                  disabled={processing}
+                />
+              )}
+
+              {processing && (
+                <div className="flex items-center gap-4">
+                  <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-green-400 font-semibold">Analysing…</span>
                 </div>
-                <div className="flex flex-col gap-6">
-                  <button
-                    onClick={submitAnswer}
-                    disabled={!audioBlob || processing}
-                    className="w-full py-6 bg-blue-600 hover:bg-blue-500 disabled:bg-zinc-800 disabled:text-zinc-600 text-white rounded-2xl font-black text-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-3 italic"
-                  >
-                    {processing ? (
-                      <>Analyzing Matrix...</>
-                    ) : (
-                      <>{currentQ === TOTAL_QUESTIONS - 1 ? "Submit Final Synthesis" : "Submit & Next Question"}</>
-                    )}
-                  </button>
-                  <button onClick={resetSession} className="w-full py-5 text-zinc-600 hover:text-red-500 font-bold uppercase tracking-widest text-xs transition-colors italic">Terminate Simulation</button>
-                </div>
+              )}
+
+              <div className="flex justify-center gap-6 flex-wrap">
+                <button
+                  onClick={submitAnswer}
+                  disabled={!audioBlob || processing}
+                  className="px-8 py-4 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:-translate-y-1"
+                >
+                  {processing
+                    ? "Analysing..."
+                    : currentQ === TOTAL_QUESTIONS - 1
+                    ? "Submit Final Answer"
+                    : "Submit & Next Question"}
+                </button>
+                <button
+                  onClick={resetSession}
+                  className="px-8 py-4 bg-transparent border border-gray-700 hover:bg-gray-800 text-red-400 hover:text-red-300 rounded-xl font-bold transition-all"
+                >
+                  End Session
+                </button>
               </div>
             </div>
 
-            {/* LIVE FEEDBACK PREVIEW */}
-            {lastMetrics && (
-              <div className="glass-card p-12 md:p-16 border-white/5 animate-fade-in ring-1 ring-white/5">
-                <h3 className="text-2xl font-black italic mb-10 flex items-center gap-3">
-                  <span className="h-2 w-2 rounded-full bg-green-500" />
-                  Last Response Metadata
-                </h3>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-                  <MetricCard label="Fluency" value={lastMetrics.speech_clarity} unit="%" color="green" />
-                  <MetricCard label="Pace" value={lastMetrics.pace} unit="%" color="blue" />
-                  <MetricCard label="Confidence" value={lastMetrics.confidence_score} unit="%" color="purple" />
-                  <MetricCard label="Fillers" value={lastMetrics.filler_words} unit="X" color="red" />
-                </div>
+            {/* Live Performance Metrics (updates after each answer) */}
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-gray-300 mb-2 flex items-center gap-2">
+                <span>📊</span> Last Answer Metrics
+              </h3>
+              <p className="text-gray-500 text-sm mb-6">Updates after you submit each answer.</p>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { label: "Fluency",     key: "speech_clarity",   color: "text-green-400" },
+                  { label: "Pace",        key: "pace",             color: "text-blue-400"  },
+                  { label: "Confidence",  key: "confidence_score", color: "text-purple-400"},
+                  { label: "Filler Words",key: "filler_words",     color: "text-red-400",  noPercent: true },
+                ].map(({ label, key, color, noPercent }) => (
+                  <div key={key} className="bg-black/40 border border-gray-800 rounded-2xl p-6 text-center">
+                    <p className="text-gray-400 text-sm mb-2 uppercase tracking-wider font-semibold">{label}</p>
+                    <p className={`text-4xl font-bold ${color}`}>
+                      {liveMetrics[key]}
+                      {!noPercent && liveMetrics[key] !== "-" && <span className="text-xl">%</span>}
+                    </p>
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+
           </div>
         )}
 
+        {/* ── STATE 3: Session complete — summary ── */}
         {finished && (
-          <div className="animate-fade-in space-y-20">
-             <div className="glass-card p-20 text-center relative overflow-hidden shadow-2xl border-white/5 ring-1 ring-white/5">
-               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-50" />
-               <span className="text-8xl mb-8 block grayscale opacity-60">🎓</span>
-               <h3 className="text-5xl md:text-8xl font-black mb-4 italic tracking-tighter uppercase">Synthesis Complete</h3>
-               <p className="text-2xl text-zinc-500 font-medium">Session terminated. Reviewing cumulative performance indicators.</p>
-             </div>
+          <div className="space-y-10">
 
-             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-               <MetricCard label="Avg Confidence" value={avgScore("confidence_score")} unit="%" color="blue" />
-               <MetricCard label="Avg Fluency" value={avgScore("speech_clarity")} unit="%" color="green" />
-               <MetricCard label="Avg Pace" value={avgScore("pace")} unit="%" color="purple" />
-               <MetricCard label="Total Fillers" value={allMetrics.reduce((s, e) => s + (e.metrics.filler_words || 0), 0)} unit="X" color="red" />
-             </div>
+            {/* Header */}
+            <div className="bg-gradient-to-br from-green-500/10 to-transparent backdrop-blur-xl border border-green-500/20 rounded-3xl p-12 text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[80px] -z-10" />
+              <span className="text-7xl mb-6 block">🎓</span>
+              <h3 className="text-3xl font-bold text-white mb-2">Session Complete!</h3>
+              <p className="text-gray-400 text-lg">You answered all {TOTAL_QUESTIONS} questions. Here's how you did overall.</p>
+            </div>
 
-             <div className="space-y-12">
-               <h3 className="text-3xl font-black mb-12 italic border-l-8 border-blue-600 pl-8">Detailed Itemization</h3>
-               {allMetrics.map((entry, i) => (
-                 <BreakdownItem key={i} index={i} entry={entry} />
-               ))}
-             </div>
+            {/* Overall average scores */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { label: "Avg Confidence",  key: "confidence_score", color: "text-blue-400",   emoji: "🏆" },
+                { label: "Avg Fluency",     key: "speech_clarity",   color: "text-green-400",  emoji: "⚡" },
+                { label: "Avg Pace",        key: "pace",             color: "text-purple-400", emoji: "💎" },
+                { label: "Avg Fillers",     key: "filler_words",     color: "text-red-400",    emoji: "🛑", noPercent: true },
+              ].map(({ label, key, color, emoji, noPercent }) => (
+                <div key={key} className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 text-center">
+                  <p className="text-3xl mb-3">{emoji}</p>
+                  <p className={`text-4xl font-bold ${color} mb-2`}>
+                    {avgScore(key)}{!noPercent && <span className="text-xl">%</span>}
+                  </p>
+                  <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">{label}</p>
+                </div>
+              ))}
+            </div>
 
-             <div className="flex justify-center pt-10">
-               <button onClick={resetSession} className="px-16 py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-2xl transition-all shadow-xl active:scale-95 italic ring-4 ring-blue-500/20">Start New Simulation</button>
-             </div>
+            {/* Per-question breakdown */}
+            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10">
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
+                <span>📜</span> Question-by-Question Breakdown
+              </h3>
+              <div className="space-y-6">
+                {allMetrics.map((entry, i) => (
+                  <div key={i} className="border border-gray-800 rounded-2xl p-6 bg-black/20">
+                    <p className="text-sm font-bold text-pink-400 uppercase tracking-widest mb-2">
+                      Question {i + 1}
+                    </p>
+                    <p className="text-white font-medium mb-4 italic">"{entry.question}"</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                      {[
+                        { label: "Confidence", val: entry.metrics.confidence_score, color: "text-blue-400" },
+                        { label: "Fluency",    val: entry.metrics.speech_clarity,   color: "text-green-400" },
+                        { label: "Pace",       val: entry.metrics.pace,             color: "text-purple-400" },
+                        { label: "Fillers",    val: entry.metrics.filler_words,     color: "text-red-400", noPercent: true },
+                      ].map(({ label, val, color, noPercent }) => (
+                        <div key={label} className="bg-gray-900 rounded-xl p-4">
+                          <p className="text-gray-500 text-xs uppercase font-bold mb-1">{label}</p>
+                          <p className={`text-2xl font-bold ${color}`}>
+                            {val ?? "-"}{!noPercent && val !== "-" && val != null && "%"}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-6 flex-wrap">
+              <button
+                onClick={resetSession}
+                className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:-translate-y-1"
+              >
+                Try Again
+              </button>
+            </div>
+
           </div>
         )}
+
       </div>
     </DashboardLayout>
   );
 };
 
-export default memo(VivaSimulation);
+export default VivaSimulation;

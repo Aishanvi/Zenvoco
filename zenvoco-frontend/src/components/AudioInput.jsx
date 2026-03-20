@@ -1,72 +1,85 @@
-import React, { useState, useRef, useEffect, memo, useCallback } from "react";
+/**
+ * AudioInput — Reusable dual-mode audio capture component.
+ *
+ * Props:
+ *  onAudioReady(blob, durationSec) — called whenever audio is ready (recorded or uploaded)
+ *  onReset()                       — called when the user clears the current audio
+ *  disabled                        — disables all controls (e.g. while parent is uploading)
+ *  compact                         — renders a smaller variant (no waveform, smaller mic)
+ */
+import React, { useState, useRef, useEffect } from "react";
 
 const ACCEPTED = "audio/webm,audio/mp3,audio/mpeg,audio/wav,audio/ogg,audio/m4a,audio/aac,audio/*";
 
-const Icon = memo(({ path, className = "w-6 h-6" }) => (
-  <svg 
-    stroke="currentColor" 
-    fill="none" 
-    strokeWidth="2.5" 
-    viewBox="0 0 24 24" 
-    aria-hidden="true" 
-    className={className}
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    {path}
-  </svg>
-));
-
 const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }) => {
-  const [mode, setMode] = useState("record");
-  const [phase, setPhase] = useState("idle");
-  const [elapsed, setElapsed] = useState(0);
+  const [mode, setMode]         = useState("record");   // "record" | "upload"
+  const [phase, setPhase]       = useState("idle");     // idle | recording | ready
+  const [elapsed, setElapsed]   = useState(0);
   const [fileName, setFileName] = useState("");
+  const [blob, setBlob]         = useState(null);
   const [dragOver, setDragOver] = useState(false);
 
   const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-  const timerRef = useRef(null);
-  const startTimeRef = useRef(null);
-  const fileInputRef = useRef(null);
+  const chunksRef        = useRef([]);
+  const timerRef         = useRef(null);
+  const startTimeRef     = useRef(null);
+  const fileInputRef     = useRef(null);
+  const objectUrlRef     = useRef(null);
 
-  useEffect(() => () => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (mediaRecorderRef.current?.stream) {
-      mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
+  const cleanupObjectUrl = () => {
+    if (objectUrlRef.current) {
+      URL.revokeObjectURL(objectUrlRef.current);
+      objectUrlRef.current = null;
     }
+  };
+
+  // Clean up on unmount
+  useEffect(() => () => {
+    clearInterval(timerRef.current);
+    stopMicStream();
+    cleanupObjectUrl();
   }, []);
 
-  const fmtTime = useCallback((s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`, []);
+  const fmtTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-  const handleReset = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+  const stopMicStream = () => {
     if (mediaRecorderRef.current?.stream) {
       mediaRecorderRef.current.stream.getTracks().forEach((t) => t.stop());
     }
+  };
+
+  // ─── Reset everything ─────────────────────────────────────────────────────
+  const handleReset = () => {
+    clearInterval(timerRef.current);
+    stopMicStream();
     setPhase("idle");
+    cleanupObjectUrl();
+    setBlob(null);
     setFileName("");
     setElapsed(0);
     onReset?.();
-  }, [onReset]);
+  };
 
-  const switchMode = useCallback((m) => {
-    if (phase === "recording") return;
+  // Switch mode clears any existing audio
+  const switchMode = (m) => {
+    if (phase === "recording") return; // can't switch while recording
     handleReset();
     setMode(m);
-  }, [phase, handleReset]);
+  };
 
+  // ─── Microphone recording ─────────────────────────────────────────────────
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mr = new MediaRecorder(stream);
+      const mr     = new MediaRecorder(stream);
       mediaRecorderRef.current = mr;
-      chunksRef.current = [];
+      chunksRef.current        = [];
 
       mr.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = () => {
         const recorded = new Blob(chunksRef.current, { type: "audio/webm" });
-        const dur = Math.round((Date.now() - startTimeRef.current) / 1000);
+        const dur      = Math.round((Date.now() - startTimeRef.current) / 1000);
+        setBlob(recorded);
         setElapsed(dur);
         setPhase("ready");
         setFileName(`Recording (${fmtTime(dur)})`);
@@ -78,179 +91,223 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
       setPhase("recording");
       setElapsed(0);
 
-      timerRef.current = setInterval(() => {
-        setElapsed(Math.round((Date.now() - startTimeRef.current) / 1000));
-      }, 500);
+      timerRef.current = setInterval(
+        () => setElapsed(Math.round((Date.now() - startTimeRef.current) / 1000)),
+        500
+      );
     } catch (err) {
       console.error("Microphone error:", err);
-      alert("Microphone access is required.");
+      alert("Microphone access is required. Please allow it in your browser and try again.");
     }
   };
 
   const stopRecording = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    clearInterval(timerRef.current);
     mediaRecorderRef.current?.stop();
+    // onstop callback handles the rest
   };
 
-  const processFile = useCallback((file) => {
+  // ─── File upload ──────────────────────────────────────────────────────────
+  const processFile = (file) => {
     if (!file) return;
+    // Basic type check
     if (!file.type.startsWith("audio/")) {
-      alert("Please select a valid audio file.");
+      alert("Please select a valid audio file (.mp3, .wav, .webm, .ogg, .m4a, .aac).");
       return;
     }
+    // Size guard — 50 MB max
     if (file.size > 50 * 1024 * 1024) {
-      alert("File is too large (max 50MB).");
+      alert("File is too large. Please upload an audio file under 50 MB.");
       return;
     }
 
+    cleanupObjectUrl();
     const url = URL.createObjectURL(file);
-    const audio = new Audio(url);
-    const finalize = (dur) => {
-      URL.revokeObjectURL(url);
+    objectUrlRef.current = url;
+
+    const audio = new Audio();
+    audio.preload = "metadata";
+
+    const finalizeFile = (dur) => {
+      audio.src = "";
+      setBlob(file);
+      setElapsed(dur);
       setFileName(file.name);
       setPhase("ready");
       onAudioReady?.(file, dur);
     };
 
-    audio.addEventListener("loadedmetadata", () => finalize(isFinite(audio.duration) ? Math.round(audio.duration) : Math.round(file.size / 16000)));
-    audio.addEventListener("error", () => finalize(Math.round(file.size / 16000)));
-  }, [onAudioReady]);
+    audio.addEventListener("loadedmetadata", () => {
+      const dur = isFinite(audio.duration) ? Math.round(audio.duration) : Math.round(file.size / 16000);
+      finalizeFile(dur);
+    }, { once: true });
+
+    audio.addEventListener("error", () => {
+      // Fallback if browser can't decode metadata
+      const dur = Math.round(file.size / 16000);
+      finalizeFile(dur);
+    }, { once: true });
+
+    audio.src = url;
+  };
+
+  const onFileChange = (e) => processFile(e.target.files[0]);
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    processFile(e.dataTransfer.files[0]);
+  };
+
+  // ─── UI ───────────────────────────────────────────────────────────────────
+  const micSize  = compact ? "w-20 h-20 text-4xl" : "w-36 h-36 text-6xl";
 
   return (
-    <div className="w-full space-y-8 animate-fade-in">
+    <div className="space-y-4">
+
+      {/* Mode toggle tabs */}
       {phase !== "ready" && (
-        <div className="inline-flex p-1.5 bg-zinc-900 border border-white/5 rounded-2xl md:rounded-[1.25rem] shadow-inner mb-2 ring-1 ring-white/5 backdrop-blur-3xl transform active:scale-[0.98] transition-all">
+        <div className="flex gap-2 p-1 bg-gray-900 border border-gray-800 rounded-2xl w-fit">
           <button
             onClick={() => switchMode("record")}
             disabled={disabled || phase === "recording"}
-            className={`px-8 py-3 rounded-xl md:rounded-2xl text-sm font-black tracking-wide uppercase transition-all duration-500 ease-out ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               mode === "record"
-                ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-blue-600 text-white shadow-lg"
+                : "text-gray-400 hover:text-white"
             }`}
           >
-            🎤 Record
+            🎤 Record Mic
           </button>
           <button
             onClick={() => switchMode("upload")}
             disabled={disabled || phase === "recording"}
-            className={`px-8 py-3 rounded-xl md:rounded-2xl text-sm font-black tracking-wide uppercase transition-all duration-500 ease-out ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               mode === "upload"
-                ? "bg-blue-600 text-white shadow-xl shadow-blue-600/20"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-blue-600 text-white shadow-lg"
+                : "text-gray-400 hover:text-white"
             }`}
           >
-            📂 Upload
+            📂 Upload File
           </button>
         </div>
       )}
 
-      {/* RECORD MODE */}
+      {/* ── RECORD mode ── */}
       {mode === "record" && phase !== "ready" && (
-        <div className="flex flex-col items-center gap-10 py-10 transition-all">
+        <div className={`flex flex-col items-center gap-6 ${compact ? "" : "py-4"}`}>
+
+          {/* Waveform animation */}
           {phase === "recording" && (
-            <div className="flex flex-col items-center gap-6">
-              <div className="h-14 flex items-center justify-center gap-1.5">
-                {[...Array(24)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="w-1 md:w-1.5 rounded-full bg-red-500 animate-pulse" 
-                    style={{ 
-                      height: `${15 + Math.random() * 35}%`,
-                      animationDelay: `${i * 100}ms`
-                    }}
-                  />
-                ))}
-              </div>
-              <p className="text-red-500 font-black text-2xl tabular-nums animate-pulse tracking-tight">
-                REC • {fmtTime(elapsed)}
-              </p>
+            <div className="flex gap-1 items-end h-10">
+              {Array.from({ length: compact ? 12 : 20 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-1.5 bg-red-500/80 rounded-full animate-pulse"
+                  style={{ height: `${10 + (i % 5) * 5}px`, animationDelay: `${i * 0.08}s` }}
+                />
+              ))}
             </div>
           )}
 
-          <div className="relative group">
+          {/* Timer */}
+          {phase === "recording" && (
+            <p className="text-red-400 font-bold text-lg flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse inline-block" />
+              Recording… {fmtTime(elapsed)}
+            </p>
+          )}
+
+          {/* Mic button */}
+          <div className="relative flex justify-center">
             {phase === "recording" && (
-              <div className="absolute inset-0 bg-red-600/30 rounded-full blur-[50px] animate-pulse -z-10" />
+              <>
+                <div className="absolute inset-0 bg-red-500/15 rounded-full blur-xl animate-ping" />
+                <div className="absolute inset-0 bg-red-500/10 rounded-full blur-2xl animate-pulse" />
+              </>
             )}
             <button
               onClick={phase === "recording" ? stopRecording : startRecording}
               disabled={disabled}
-              className={`relative h-32 w-32 md:h-48 md:w-48 rounded-full border-4 flex items-center justify-center transition-all duration-500 transform hover:scale-[1.03] active:scale-90 shadow-2xl ${
+              className={`relative z-10 ${micSize} rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl ${
                 phase === "recording"
-                  ? "bg-red-600 border-red-400 rotate-180"
-                  : "bg-zinc-900 border-white/5 hover:border-blue-500/50 shadow-blue-600/5 ring-4 ring-white/5"
-              } ${disabled && "opacity-50 cursor-not-allowed grayscale"}`}
+                  ? "bg-red-600 scale-110 shadow-[0_0_50px_rgba(220,38,38,0.5)]"
+                  : "bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:border-gray-500 hover:scale-105"
+              }`}
             >
-              <div className={`transition-all duration-500 transform ${phase === "recording" ? "scale-110" : "scale-100"}`}>
-                <Icon 
-                  path={phase === "recording" 
-                    ? <rect x="6" y="6" width="12" height="12" rx="2" fill="white" />
-                    : <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4m-4 0h8" />
-                  } 
-                  className={compact ? "w-8 h-8" : "w-10 h-10 md:w-16 md:h-16"}
-                />
-              </div>
+              🎤
             </button>
           </div>
 
-          <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest text-center max-w-[200px] leading-relaxed">
-            {phase === "idle" ? "Click to start recording" : "Click to finish and save"}
+          <p className="text-gray-400 text-sm text-center">
+            {phase === "idle"
+              ? "Click the microphone to start recording"
+              : "Click again to stop"}
           </p>
         </div>
       )}
 
-      {/* UPLOAD MODE */}
+      {/* ── UPLOAD mode ── */}
       {mode === "upload" && phase !== "ready" && (
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
-          onDrop={(e) => { e.preventDefault(); setDragOver(false); processFile(e.dataTransfer.files[0]); }}
+          onDrop={onDrop}
           onClick={() => !disabled && fileInputRef.current?.click()}
-          className={`group bg-zinc-950/50 border-2 border-dashed rounded-[2.5rem] p-12 md:p-24 text-center cursor-pointer transition-all duration-500 ${
-            dragOver ? "border-blue-500 bg-blue-500/10 scale-[1.01]" : "border-white/10 hover:border-blue-500/30 hover:bg-zinc-900/60"
-          } ${disabled && "opacity-50 pointer-events-none"}`}
+          className={`border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 ${
+            dragOver
+              ? "border-blue-400 bg-blue-500/10 scale-[1.01]"
+              : "border-gray-700 hover:border-blue-500/50 hover:bg-blue-500/5"
+          } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          <input ref={fileInputRef} type="file" accept={ACCEPTED} onChange={(e) => processFile(e.target.files[0])} className="hidden" />
-          <div className="w-24 h-24 bg-blue-600/10 rounded-3xl mx-auto mb-10 flex items-center justify-center text-blue-500 group-hover:scale-110 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner italic font-black text-4xl">
-            UP
-          </div>
-          <h3 className="text-2xl md:text-3xl font-black mb-4">DRAG & DROP</h3>
-          <p className="text-zinc-500 text-lg md:text-xl font-medium mb-10">or click to browse your files</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            {["MP3", "WAV", "OGG", "M4A"].map((ext) => (
-              <span key={ext} className="text-[10px] md:text-xs bg-white/5 border border-white/5 text-zinc-400 px-4 py-1.5 rounded-full font-black tracking-widest uppercase">{ext}</span>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPTED}
+            onChange={onFileChange}
+            className="hidden"
+          />
+          <div className="text-5xl mb-4">📂</div>
+          <p className="text-white font-semibold text-lg mb-2">
+            {dragOver ? "Drop it here!" : "Drag & drop an audio file"}
+          </p>
+          <p className="text-gray-400 text-sm mb-4">or click to browse</p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {["MP3", "WAV", "WEBM", "OGG", "M4A", "AAC"].map((ext) => (
+              <span key={ext} className="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-3 py-1 rounded-full font-mono">
+                .{ext.toLowerCase()}
+              </span>
             ))}
           </div>
+          <p className="text-gray-600 text-xs mt-4">Max file size: 50 MB</p>
         </div>
       )}
 
-      {/* READY STATE */}
+      {/* ── READY state (both modes) ── */}
       {phase === "ready" && (
-        <div className="bg-blue-600/10 border border-blue-500/20 rounded-[2rem] p-8 md:p-12 animate-fade-in ring-1 ring-blue-500/20 shadow-2xl relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -z-10 transition-all duration-1000 group-hover:bg-blue-500/20" />
-          <div className="flex flex-col md:flex-row items-center gap-8 justify-between">
-            <div className="flex items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-xl ring-4 ring-blue-500/20">
-                <Icon path={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></>} />
-              </div>
-              <div className="text-left">
-                <p className="text-blue-400 font-black text-xs uppercase tracking-[0.2em] mb-1">Status: Ready</p>
-                <h4 className="text-xl md:text-2xl font-black text-white truncate max-w-[200px] md:max-w-md">{fileName}</h4>
-              </div>
+        <div className="bg-green-500/10 border border-green-500/30 rounded-2xl p-5 flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-400 font-bold shrink-0">
+              ✓
             </div>
-            {!disabled && (
-              <button
-                onClick={handleReset}
-                className="w-full md:w-auto px-8 py-4 rounded-2xl bg-zinc-900 border border-white/10 text-white font-black text-sm uppercase tracking-widest transition-all hover:bg-zinc-800 hover:border-white/20 active:scale-95"
-              >
-                Clear & Redo
-              </button>
-            )}
+            <div>
+              <p className="text-green-400 font-semibold text-sm">Audio ready</p>
+              <p className="text-gray-400 text-sm truncate max-w-xs">{fileName}</p>
+            </div>
           </div>
+          {!disabled && (
+            <button
+              onClick={handleReset}
+              className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 px-3 py-1.5 rounded-lg transition-all shrink-0"
+            >
+              ↺ Clear & redo
+            </button>
+          )}
         </div>
       )}
+
     </div>
   );
 };
 
-export default memo(AudioInput);
+export default AudioInput;

@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
 
 // ─── Full content library ───────────────────────────────────────────────────
@@ -106,229 +106,204 @@ const TOPICS = [
 ];
 
 const COLOR_MAP = {
-  blue:   { 
-    active: "bg-blue-600 border-blue-500 shadow-blue-600/20",   
-    badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",   
-    dot: "bg-blue-500 shadow-blue-500/40",   
-    heading: "text-blue-400",   
-    glow: "bg-blue-500/5",
-    accent: "border-blue-500/50"
-  },
-  purple: { 
-    active: "bg-purple-600 border-purple-500 shadow-purple-600/20", 
-    badge: "bg-purple-500/10 text-purple-400 border-purple-500/20", 
-    dot: "bg-purple-500 shadow-purple-500/40", 
-    heading: "text-purple-400", 
-    glow: "bg-purple-500/5",
-    accent: "border-purple-500/50"
-  },
-  green:  { 
-    active: "bg-green-600 border-green-500 shadow-green-600/20",  
-    badge: "bg-green-500/10 text-green-400 border-green-500/20",  
-    dot: "bg-green-500 shadow-green-500/40",  
-    heading: "text-green-400",  
-    glow: "bg-green-500/5",
-    accent: "border-green-500/50"
-  },
-  pink:   { 
-    active: "bg-pink-600 border-pink-500 shadow-pink-600/20",    
-    badge: "bg-pink-500/10 text-pink-400 border-pink-500/20",    
-    dot: "bg-pink-500 shadow-pink-500/40",   
-    heading: "text-pink-400",   
-    glow: "bg-pink-500/5",
-    accent: "border-pink-500/50"
-  },
+  blue:   { active: "bg-blue-600 border-blue-500",   badge: "bg-blue-500/20 text-blue-400 border-blue-500/30",   dot: "bg-blue-500",   heading: "text-blue-400",   glow: "bg-blue-500/10" },
+  purple: { active: "bg-purple-600 border-purple-500", badge: "bg-purple-500/20 text-purple-400 border-purple-500/30", dot: "bg-purple-500", heading: "text-purple-400", glow: "bg-purple-500/10" },
+  green:  { active: "bg-green-600 border-green-500",  badge: "bg-green-500/20 text-green-400 border-green-500/30",  dot: "bg-green-500",  heading: "text-green-400",  glow: "bg-green-500/10" },
+  pink:   { active: "bg-pink-600 border-pink-500",    badge: "bg-pink-500/20 text-pink-400 border-pink-500/30",    dot: "bg-pink-500",   heading: "text-pink-400",   glow: "bg-pink-500/10" },
 };
 
 const LearnMode = () => {
-    const [selectedId, setSelectedId] = useState("self-intro");
-    const [activeTab, setActiveTab]   = useState("guide"); 
+  const [selectedId, setSelectedId] = useState("self-intro");
+  const [activeTab, setActiveTab]   = useState("guide"); // "guide" | "dos" | "sample"
 
-    const topic = TOPICS.find((t) => t.id === selectedId);
-    const c     = COLOR_MAP[topic.color];
+  const topic = TOPICS.find((t) => t.id === selectedId);
+  const c     = COLOR_MAP[topic.color];
 
-    return (
-      <DashboardLayout>
-        <div className="max-w-6xl mx-auto py-10 px-4">
-          <header className="mb-20 animate-fade-in">
-              <h2 className="text-5xl md:text-8xl font-black tracking-tight mb-4 italic">
-                Learn <span className="premium-gradient-text not-italic">Mode</span>
-              </h2>
-              <p className="text-zinc-500 text-xl font-medium tracking-wide">Study guided frameworks for every high-stakes speaking scenario.</p>
-          </header>
+  return (
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto space-y-10">
 
-          <div className="grid lg:grid-cols-4 gap-12 items-start">
-            {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-4 sticky top-10">
-               <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6 italic">Core Curriculum</p>
-               <div className="space-y-3">
-                  {TOPICS.map((t) => {
-                    const isActive = selectedId === t.id;
-                    const tc = COLOR_MAP[t.color];
-                    return (
-                      <button
-                        key={t.id}
-                        onClick={() => { setSelectedId(t.id); setActiveTab("guide"); }}
-                        className={`group flex items-center justify-between w-full text-left px-6 py-4.5 rounded-[1.5rem] transition-all duration-300 border-2 transform active:scale-95 ${
-                          isActive
-                            ? `${tc.active} text-white font-black shadow-xl ring-4 ring-${t.color}-500/10`
-                            : "bg-zinc-950 border-white/5 text-zinc-500 hover:border-white/10 hover:text-white"
-                        }`}
-                      >
-                        <div className="flex items-center gap-4">
-                           <span className={`text-2xl transition-transform duration-500 ${isActive ? "scale-125" : "group-hover:scale-110"}`}>{t.icon}</span>
-                           <span className="text-sm font-bold tracking-tight uppercase italic">{t.label}</span>
-                        </div>
-                        {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
-                      </button>
-                    );
-                  })}
-               </div>
+        {/* Header */}
+        <div>
+          <h2 className="text-4xl font-extrabold tracking-tight">Learn Mode</h2>
+          <p className="text-gray-400 mt-2">
+            Study guided frameworks for every high-stakes speaking scenario.
+          </p>
+        </div>
 
-               <div className="mt-12 glass-card p-8 bg-blue-600/5 border-blue-500/10 ring-1 ring-blue-500/10 italic">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-3">Study Tip</h4>
-                  <p className="text-sm text-zinc-500 leading-relaxed font-medium">
-                    Internalize the structure, then use <span className="text-white font-black">Guided Practice</span> to perform real-time neural mapping.
-                  </p>
-               </div>
-            </div>
+        <div className="grid lg:grid-cols-4 gap-8 items-start">
 
-            {/* Main Content */}
-            <div className="lg:col-span-3 space-y-10 animate-fade-in">
-               {/* Hero */}
-               <div className={`relative rounded-[2.5rem] p-10 md:p-20 border-2 ${c.accent} bg-zinc-950/80 backdrop-blur-3xl overflow-hidden shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)]`}>
-                  <div className={`absolute top-0 right-0 w-[500px] h-[500px] ${c.glow} rounded-full blur-[130px] -z-10`} />
-                  <div className="flex flex-col md:flex-row items-start md:items-center gap-10 mb-12">
-                     <span className="text-7xl md:text-9xl shadow-2xl rounded-3xl p-4 bg-white/5 ring-1 ring-white/10">{topic.icon}</span>
-                     <div className="space-y-4">
-                        <span className={`px-4 py-1.5 rounded-full font-black text-[10px] uppercase tracking-[0.3em] ${c.badge}`}>{topic.id.replace("-", " ")} Matrix</span>
-                        <h3 className={`text-4xl md:text-7xl font-black italic tracking-tighter text-white leading-none`}>{topic.label}</h3>
-                        <p className="text-zinc-500 text-lg md:text-xl font-bold tracking-wide italic">"{topic.tagline}"</p>
-                     </div>
-                  </div>
-                  <p className="text-zinc-400 text-lg md:text-2xl leading-relaxed font-medium max-w-4xl">{topic.explanation}</p>
-               </div>
+          {/* ── Sidebar ── */}
+          <div className="lg:col-span-1 space-y-3">
+            {TOPICS.map((t) => {
+              const tc = COLOR_MAP[t.color];
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => { setSelectedId(t.id); setActiveTab("guide"); }}
+                  className={`block w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 border ${
+                    selectedId === t.id
+                      ? `${tc.active} text-white font-bold shadow-lg`
+                      : "bg-gray-900 border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-white"
+                  }`}
+                >
+                  <span className="mr-3">{t.icon}</span>{t.label}
+                </button>
+              );
+            })}
 
-               {/* Tabs */}
-               <div className="flex p-1.5 bg-zinc-900/50 border border-white/5 rounded-[2rem] shadow-inner backdrop-blur-3xl w-fit">
-                  {[
-                    { key: "guide",  label: "Framework", icon: "📐" },
-                    { key: "dos",    label: "Do's & Don'ts", icon: "✅" },
-                    { key: "sample", label: "Sample", icon: "💬" },
-                  ].map(({ key, label, icon }) => (
-                    <button
-                      key={key}
-                      onClick={() => setActiveTab(key)}
-                      className={`px-8 py-3.5 rounded-[1.25rem] font-black text-xs uppercase tracking-widest transition-all ${
-                        activeTab === key
-                          ? "bg-white text-black shadow-2xl shadow-white/10"
-                          : "text-zinc-500 hover:text-white"
-                      }`}
-                    >
-                      <span className="mr-2 text-sm">{icon}</span> {label}
-                    </button>
-                  ))}
-               </div>
-
-               <div className="animate-fade-in min-h-[500px]">
-                  {activeTab === "guide" && (
-                    <div className="grid md:grid-cols-2 gap-10">
-                        <div className="glass-card p-10 md:p-14 space-y-10 border-white/5 ring-1 ring-white/5 shadow-2xl">
-                           <h4 className="text-xs uppercase tracking-[0.4em] font-black text-zinc-500 italic pl-1">Structural Sequence</h4>
-                           <div className="space-y-10">
-                              {topic.structure.map(({ step, detail }, i) => (
-                                <div key={i} className="flex gap-8 group">
-                                   <span className={`shrink-0 w-12 h-12 rounded-2xl ${c.dot} text-white font-black text-xl flex items-center justify-center italic shadow-lg ring-4 ring-white/5 transition-transform group-hover:scale-110`}>
-                                      {i + 1}
-                                   </span>
-                                   <div className="space-y-2">
-                                      <p className="text-white font-black text-xl italic tracking-tight uppercase">{step}</p>
-                                      <p className="text-zinc-500 font-medium text-lg leading-relaxed">{detail}</p>
-                                   </div>
-                                </div>
-                              ))}
-                           </div>
-                        </div>
-
-                        <div className="glass-card p-10 md:p-14 space-y-10 border-white/5 ring-1 ring-white/5 shadow-2xl bg-zinc-950/40">
-                           <h4 className="text-xs uppercase tracking-[0.4em] font-black text-zinc-500 italic pl-1">AI Cognitive Hints</h4>
-                           <ul className="space-y-10">
-                              {topic.hints.map((hint, i) => (
-                                <li key={i} className="flex items-start gap-6 group">
-                                   <span className={`text-4xl transition-transform duration-500 group-hover:rotate-12`}>🧠</span>
-                                   <span className="text-zinc-400 text-lg md:text-xl font-medium leading-relaxed group-hover:text-white transition-colors italic">{hint}</span>
-                                </li>
-                              ))}
-                           </ul>
-                        </div>
-                    </div>
-                  )}
-
-                  {activeTab === "dos" && (
-                    <div className="grid md:grid-cols-2 gap-10">
-                        <div className="glass-card p-10 md:p-14 border border-green-500/10 bg-green-500/[0.02] shadow-2xl ring-1 ring-green-500/10">
-                           <h4 className="text-xs uppercase tracking-[0.4em] font-black text-green-500 italic mb-12 pl-1">Transmission Validations</h4>
-                           <ul className="space-y-10">
-                              {topic.dos.map((item, i) => (
-                                <li key={i} className="flex items-start gap-6 group">
-                                   <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500 shrink-0 font-black italic">✓</div>
-                                   <span className="text-zinc-400 text-xl font-medium leading-relaxed group-hover:text-white transition-colors">{item}</span>
-                                </li>
-                              ))}
-                           </ul>
-                        </div>
-                        <div className="glass-card p-10 md:p-14 border border-red-500/10 bg-red-500/[0.02] shadow-2xl ring-1 ring-red-500/10">
-                           <h4 className="text-xs uppercase tracking-[0.4em] font-black text-red-500 italic mb-12 pl-1">System Rejections</h4>
-                           <ul className="space-y-10">
-                              {topic.donts.map((item, i) => (
-                                <li key={i} className="flex items-start gap-6 group">
-                                   <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-red-500 shrink-0 font-black italic">✗</div>
-                                   <span className="text-zinc-400 text-xl font-medium leading-relaxed group-hover:text-white transition-colors">{item}</span>
-                                </li>
-                              ))}
-                           </ul>
-                        </div>
-                    </div>
-                  )}
-
-                  {activeTab === "sample" && (
-                    <div className="glass-card p-12 md:p-24 bg-gradient-to-br from-blue-900/10 via-zinc-950 to-transparent border-2 border-white/5 relative overflow-hidden ring-1 ring-white/5 shadow-[0_40px_80px_-40px_rgba(0,0,0,0.8)] group">
-                        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[150px] -z-10 group-hover:scale-110 transition-transform duration-1000" />
-                        <h4 className="text-xs uppercase tracking-[0.4em] font-black text-zinc-500 mb-12 italic pl-1 flex items-center gap-3">
-                           <span className="h-2 w-2 rounded-full bg-blue-500" />
-                           Optimal Response Template
-                        </h4>
-                        <p className="text-3xl md:text-5xl font-black text-white italic leading-[1.2] tracking-tight group-hover:text-blue-200 transition-colors drop-shadow-2xl">
-                          "{topic.sample}"
-                        </p>
-                        <div className="mt-20 pt-10 border-t border-white/5 flex items-center gap-6">
-                           <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center text-2xl font-black italic">📌</div>
-                           <p className="text-sm text-zinc-500 font-black uppercase tracking-widest italic leading-relaxed">
-                             Template status: UNLOCKED. Personalize with real-world metadata before physical performance.
-                           </p>
-                        </div>
-                    </div>
-                  )}
-               </div>
-
-               {/* CTA */}
-               <div className="glass-card p-10 md:p-16 border-2 border-white/5 bg-zinc-950 shadow-2xl ring-1 ring-white/10 flex flex-col md:flex-row items-center justify-between gap-10">
-                  <div className="space-y-4 text-center md:text-left">
-                    <p className="text-2xl font-black text-white italic uppercase tracking-tight">Cognitive readiness confirmed</p>
-                    <p className="text-zinc-500 font-medium text-lg italic">Ready to engage the simulation matrix?</p>
-                  </div>
-                  <a
-                    href="/practice"
-                    className="w-full md:w-auto px-16 py-6 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-black text-2xl transition-all shadow-xl shadow-blue-600/20 active:scale-95 text-center italic group"
-                  >
-                    Initiate Practice <span className="text-3xl ml-4 inline-block group-hover:translate-x-3 transition-transform">→</span>
-                  </a>
-               </div>
+            {/* Quick tip card */}
+            <div className="mt-6 bg-gray-900/60 border border-gray-800 rounded-2xl p-5">
+              <p className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">💡 Study Tip</p>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Read the framework, then try recording yourself using the Guided Practice mode to apply it.
+              </p>
             </div>
           </div>
+
+          {/* ── Main Content ── */}
+          <div className="lg:col-span-3 space-y-6">
+
+            {/* Topic Hero */}
+            <div className={`relative rounded-3xl p-8 border border-gray-800 bg-gray-900/50 backdrop-blur-xl overflow-hidden`}>
+              <div className={`absolute top-0 right-0 w-64 h-64 ${c.glow} rounded-full blur-[80px] -z-10`} />
+              <div className="flex items-center gap-4 mb-3">
+                <span className="text-5xl">{topic.icon}</span>
+                <div>
+                  <h3 className={`text-3xl font-extrabold ${c.heading}`}>{topic.label}</h3>
+                  <p className="text-gray-400 text-sm mt-1 italic">{topic.tagline}</p>
+                </div>
+              </div>
+              <p className="text-gray-300 text-lg leading-relaxed">{topic.explanation}</p>
+            </div>
+
+            {/* Tab switcher */}
+            <div className="flex gap-3 flex-wrap">
+              {[
+                { key: "guide",  label: "📐 Framework" },
+                { key: "dos",    label: "✅ Do's & Don'ts" },
+                { key: "sample", label: "💬 Sample Answer" },
+              ].map(({ key, label }) => (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all border ${
+                    activeTab === key
+                      ? "bg-white text-black border-white"
+                      : "bg-gray-900 border-gray-800 text-gray-400 hover:text-white hover:border-gray-600"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {/* ── Tab: Framework ── */}
+            {activeTab === "guide" && (
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Structure */}
+                <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 space-y-4">
+                  <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2">
+                    <span>📐</span> Step-by-Step Structure
+                  </h4>
+                  <ol className="space-y-4">
+                    {topic.structure.map(({ step, detail }, i) => (
+                      <li key={i} className="flex gap-4">
+                        <span className={`flex-shrink-0 w-7 h-7 rounded-full ${c.dot} text-white text-xs font-bold flex items-center justify-center`}>
+                          {i + 1}
+                        </span>
+                        <div>
+                          <p className="text-white font-semibold">{step}</p>
+                          <p className="text-gray-400 text-sm mt-0.5">{detail}</p>
+                        </div>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+
+                {/* AI Hints */}
+                <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 space-y-4">
+                  <h4 className="text-sm uppercase tracking-widest font-bold text-pink-400 flex items-center gap-2">
+                    <span>🤖</span> AI Coaching Hints
+                  </h4>
+                  <ul className="space-y-4">
+                    {topic.hints.map((hint, i) => (
+                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                        <span className="text-pink-400 mt-0.5 text-lg">✦</span>
+                        <span className="leading-relaxed">{hint}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* ── Tab: Do's & Don'ts ── */}
+            {activeTab === "dos" && (
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-gray-900/50 backdrop-blur-xl border border-green-500/20 rounded-3xl p-8">
+                  <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2 mb-6">
+                    <span>✅</span> Do's
+                  </h4>
+                  <ul className="space-y-4">
+                    {topic.dos.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                        <span className="text-green-400 text-xl mt-0.5">✓</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="bg-gray-900/50 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8">
+                  <h4 className="text-sm uppercase tracking-widest font-bold text-red-400 flex items-center gap-2 mb-6">
+                    <span>🚫</span> Don'ts
+                  </h4>
+                  <ul className="space-y-4">
+                    {topic.donts.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                        <span className="text-red-400 text-xl mt-0.5">✗</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            {/* ── Tab: Sample Answer ── */}
+            {activeTab === "sample" && (
+              <div className="bg-gradient-to-br from-blue-900/30 via-purple-900/20 to-transparent border border-blue-500/30 rounded-3xl p-10">
+                <h4 className="text-sm uppercase tracking-widest font-bold text-blue-300 flex items-center gap-2 mb-6">
+                  <span>💬</span> Example Response
+                </h4>
+                <p className="text-xl text-blue-100/90 leading-relaxed italic">{topic.sample}</p>
+                <div className="mt-8 pt-6 border-t border-blue-500/20">
+                  <p className="text-sm text-gray-500 font-medium">
+                    📌 This is a template to inspire you — personalise it with your own real experiences before practice.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
+              <div>
+                <p className="font-semibold text-white">Ready to apply what you've learned?</p>
+                <p className="text-sm text-gray-400 mt-1">Open Guided Practice and use this framework in a recorded session.</p>
+              </div>
+              <a
+                href="/practice"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+              >
+                Go to Practice →
+              </a>
+            </div>
+
+          </div>
         </div>
-      </DashboardLayout>
-    );
+      </div>
+    </DashboardLayout>
+  );
 };
 
-export default memo(LearnMode);
+export default LearnMode;
