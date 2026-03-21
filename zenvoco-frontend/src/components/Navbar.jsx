@@ -22,15 +22,26 @@ function Navbar() {
         <a href="#about" className="text-gray-300 hover:text-white transition">
           About
         </a>
-        <Link to="/login" className="text-gray-300 hover:text-white transition">
-          Login
-        </Link>
-        <Link
-          to="/register"
-          className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Register
-        </Link>
+        {localStorage.getItem("token") ? (
+          <Link
+            to="/dashboard"
+            className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Go to Dashboard
+          </Link>
+        ) : (
+          <>
+            <Link to="/login" className="text-gray-300 hover:text-white transition">
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              Register
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Mobile Toggle */}
@@ -47,14 +58,26 @@ function Navbar() {
           <a href="#home" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white transition">Home</a>
           <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white transition">How It Works</a>
           <a href="#about" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white transition">About</a>
-          <Link to="/login" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white transition">Login</Link>
-          <Link
-            to="/register"
-            onClick={() => setMenuOpen(false)}
-            className="block w-full text-center bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition"
-          >
-            Register
-          </Link>
+          {localStorage.getItem("token") ? (
+            <Link
+              to="/dashboard"
+              onClick={() => setMenuOpen(false)}
+              className="block w-full text-center bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Go to Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="block text-gray-300 hover:text-white transition">Login</Link>
+              <Link
+                to="/register"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-center bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       )}
 

@@ -1,11 +1,17 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import API from "../api/api";
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -18,7 +24,24 @@ function Register() {
       });
 
       if (response.status === 200 || response.status === 201) {
+        // Clear any old user data
+        localStorage.clear();
         localStorage.setItem("name", response.data.name || name);
+
+        // Auto-login to get the token for the new user
+        try {
+          const loginResponse = await API.post("/auth/login", { email, password });
+          if (loginResponse.status === 200 || loginResponse.status === 201) {
+            localStorage.setItem("token", loginResponse.data.access_token);
+          }
+        } catch (loginError) {
+          console.error("Auto-login failed:", loginError);
+          // If auto login fails, force them to login
+          alert("Registration successful! Please log in.");
+          navigate("/login");
+          return;
+        }
+
         alert("Registration successful!");
         navigate("/onboarding");
       }

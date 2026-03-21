@@ -33,19 +33,30 @@ function Welcome() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-5 items-center w-full sm:w-auto px-6">
-              <Link
-                to="/register"
-                className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-blue-500 transition-all duration-300 transform hover:-translate-y-1"
-              >
-                Start Training Free
-              </Link>
+              {localStorage.getItem("token") ? (
+                <Link
+                  to="/dashboard"
+                  className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-blue-500 transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="w-full sm:w-auto bg-blue-600 text-white px-10 py-5 rounded-xl font-bold text-lg hover:bg-blue-500 transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    Start Training Free
+                  </Link>
 
-              <Link
-                to="/login"
-                className="w-full sm:w-auto bg-gray-900 border border-gray-800 px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-800 hover:border-gray-700 transition-all duration-300"
-              >
-                Sign In
-              </Link>
+                  <Link
+                    to="/login"
+                    className="w-full sm:w-auto bg-gray-900 border border-gray-800 px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-800 hover:border-gray-700 transition-all duration-300"
+                  >
+                    Sign In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </section>
