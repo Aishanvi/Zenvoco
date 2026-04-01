@@ -108,16 +108,18 @@ async def process_audio_transcription(file_path: str) -> str:
         return "Audio transcription failed."
 
 # STEP 2: TEXT -> AI FEEDBACK (Google Gemini)
-async def process_generative_feedback(transcription: str) -> dict:
+async def process_generative_feedback(transcription: str, topic: str = None) -> dict:
     """Uses Google Gemini API to generate structured coaching feedback"""
     if not settings.GEMINI_API_KEY:
         print("Gemini API Key missing, using local fallback.")
         return _build_local_feedback(transcription, reason="missing_gemini_key")
 
+    topic_context = f"\n\nThe student was asked to speak about this topic/question:\n'{topic}'\nEvaluate how well they addressed this specific topic in your feedback." if topic else ""
+
     prompt = f"""
     You are an expert English communication coach.
     Analyze the following student's speech transcription:
-    "{transcription}"
+    "{transcription}"{topic_context}
 
     Evaluate based on confidence, fluency, and professional impact.
     

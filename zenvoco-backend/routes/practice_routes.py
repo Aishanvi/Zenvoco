@@ -74,7 +74,7 @@ async def upload_speech_audio(
         
     # Kickoff Analytics Engines Pipelines
     transcription = await process_audio_transcription(temp_media_path)
-    analysis_data = await process_generative_feedback(transcription)
+    analysis_data = await process_generative_feedback(transcription, session.get("topic"))
     
     # Safely extract the inner evaluation dictionary
     ai_eval = analysis_data.get("ai_evaluation", {})

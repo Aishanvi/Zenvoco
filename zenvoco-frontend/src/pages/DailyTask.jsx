@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DashboardLayout from "../layout/DashboardLayout";
 import API from "../api/api";
 import AudioInput from "../components/AudioInput";
@@ -43,14 +43,6 @@ const getTodayTask = () => {
   return TASK_POOL[dayIndex];
 };
 
-const MOCK_HISTORY = [
-  { title: "Self Introduction Practice",  date: "March 19", status: "completed", xp: 40 },
-  { title: "Interview Question (STAR)",    date: "March 18", status: "completed", xp: 50 },
-  { title: "Presentation Opening",         date: "March 17", status: "completed", xp: 60 },
-  { title: "Describe a Challenge",         date: "March 16", status: "completed", xp: 50 },
-  { title: "Self Introduction Practice",  date: "March 15", status: "completed", xp: 40 },
-];
-
 const DailyTask = () => {
   const todayTask = getTodayTask();
 
@@ -58,7 +50,71 @@ const DailyTask = () => {
   const [audioBlob, setAudioBlob] = useState(null);
   const [audioDur, setAudioDur]   = useState(0);
   const [result, setResult]       = useState(null);
-  const [streak]                  = useState(5);
+  
+  const [taskHistory, setTaskHistory] = useState([]);
+  const [streak, setStreak]           = useState(0);
+
+  // Fetch actual practice history and calculate streak
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await API.get("/progress/");
+        const timeline = res.data.timeline_metrics || [];
+        
+        // Filter history explicitly for daily tasks (i.e., topic matches one of the TASK_POOL titles)
+        const dailyTaskTitles = TASK_POOL.map((t) => t.title);
+        const filteredDaily = timeline.filter((record) => dailyTaskTitles.includes(record.topic));
+        
+        // Sort explicitly by date descending
+        const sortedHistory = filteredDaily.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setTaskHistory(sortedHistory);
+        
+        // Calculate dynamic streak based on consecutive days of practice
+        // Starting from today or yesterday
+        let currentStreak = 0;
+        let expectedDate = new Date();
+        expectedDate.setHours(0, 0, 0, 0);
+
+        // Map all unique dates (midnight timestamps) where a daily task was completed
+        const completedDates = [...new Set(sortedHistory.map((item) => {
+          const d = new Date(item.date);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }))];
+
+        // Check if today is completed, if not expectedDate could start from yesterday
+        if (completedDates.includes(expectedDate.getTime())) {
+            currentStreak = 1;
+        } else {
+            // Check yesterday
+            const yesterday = new Date(expectedDate);
+            yesterday.setDate(yesterday.getDate() - 1);
+            if (!completedDates.includes(yesterday.getTime())) {
+                // Streak is 0
+                setStreak(0);
+                return;
+            }
+        }
+        
+        // Walk back in days to count streak
+        for (let i = currentStreak === 1 ? 1 : 0; i < completedDates.length; i++) {
+             const checkDate = new Date(expectedDate);
+             checkDate.setDate(checkDate.getDate() - i);
+             if (completedDates.includes(checkDate.getTime())) {
+                 if (i !== 0 || currentStreak === 0) currentStreak++;
+             } else {
+                 break;
+             }
+        }
+        
+        setStreak(currentStreak);
+
+      } catch (err) {
+        console.error("Failed to load daily history.", err);
+      }
+    };
+    fetchHistory();
+  }, [phase]); // Re-fetch history when phase changes (after finishing task)
 
   const fmtTime = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -85,15 +141,15 @@ const DailyTask = () => {
       console.error("Task analysis failed:", err);
       setResult({
         ai_evaluation: {
-          confidence_score: 78,
-          speech_clarity: 82,
-          pace: 74,
-          grammar_score: 80,
-          filler_words: 3,
-          ai_feedback: "Good structure and clear delivery. Try reducing filler words to further improve impact.",
+          confidence_score: 0,
+          speech_clarity: 0,
+          pace: 0,
+          grammar_score: 0,
+          filler_words: 0,
+          ai_feedback: "Error analysing audio. Please record and try again.",
         },
       });
-      setPhase("done");
+      setPhase("done"); // Still allow them to reset
     }
   };
 
@@ -118,7 +174,7 @@ const DailyTask = () => {
           </div>
 
           {/* Streak Badge */}
-          <div className="flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-red-500/10 border border-orange-500/30 rounded-2xl px-6 py-4">
+          <div className="flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-red-500/10 border border-orange-500/30 rounded-2xl px-6 py-4 transition-transform hover:scale-105 duration-300">
             <span className="text-3xl">🔥</span>
             <div>
               <p className="text-2xl font-bold text-white">{streak} Days</p>
@@ -172,16 +228,16 @@ const DailyTask = () => {
             {audioBlob && phase === "idle" && (
               <button
                 onClick={analyseRecording}
-                className="px-8 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)]"
+                className="mt-6 px-10 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] w-full md:w-auto"
               >
                 ✅ Submit & Analyse
               </button>
             )}
 
             {phase === "analysing" && (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 border-2 border-blue-500/20 bg-blue-500/5 p-6 rounded-2xl">
                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-blue-400 font-semibold">AI is analysing your recording…</span>
+                <span className="text-blue-400 font-semibold text-lg tracking-wide">AI is evaluating your response…</span>
               </div>
             )}
           </div>
@@ -189,13 +245,13 @@ const DailyTask = () => {
 
         {/* ── Results Panel ── */}
         {phase === "done" && (
-          <div className="space-y-8">
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
             {/* Success Header */}
             <div className="bg-gradient-to-br from-green-500/10 to-transparent border border-green-500/20 rounded-3xl p-10 text-center">
               <span className="text-6xl block mb-4">🎉</span>
               <h3 className="text-3xl font-bold text-white mb-2">Task Complete!</h3>
-              <p className="text-gray-400 mb-4">You earned <span className="text-yellow-400 font-bold">+{todayTask.xp} XP</span> and extended your streak.</p>
+              <p className="text-gray-400 mb-4">You successfully completed this daily task.</p>
             </div>
 
             {/* Score Cards */}
@@ -207,7 +263,7 @@ const DailyTask = () => {
                 { label: "Grammar",      val: ai.grammar_score,    color: "text-yellow-400", emoji: "📝" },
                 { label: "Filler Words", val: ai.filler_words,     color: "text-red-400",    emoji: "🛑", noPercent: true },
               ].map(({ label, val, color, emoji, noPercent }) => (
-                <div key={label} className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 text-center">
+                <div key={label} className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 text-center hover:border-gray-600 transition-colors">
                   <p className="text-2xl mb-2">{emoji}</p>
                   <p className={`text-3xl font-bold ${color} mb-1`}>
                     {val ?? 0}{!noPercent && "%"}
@@ -220,11 +276,11 @@ const DailyTask = () => {
             {/* AI Feedback */}
             <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
               <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2 mb-4">
-                <span>🧠</span> AI Feedback
+                <span>🧠</span> AI Coaching Insights
               </h4>
               <p className="text-xl text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
               <div className="mt-6 pt-6 border-t border-gray-800">
-                <p className="text-sm text-gray-500 font-medium">Duration recorded: <span className="text-gray-300">{fmtTime(audioDur)}</span></p>
+                <p className="text-sm text-gray-400 font-medium tracking-wide">Audio Duration: <span className="text-white bg-gray-800 px-3 py-1 rounded-md">{fmtTime(audioDur)}</span></p>
               </div>
             </div>
 
@@ -232,49 +288,62 @@ const DailyTask = () => {
             <div className="flex gap-4 flex-wrap">
               <a
                 href="/progress"
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
               >
                 View Full Progress →
               </a>
               <button
                 onClick={reset}
-                className="px-8 py-4 border border-gray-700 hover:bg-gray-800 text-gray-300 rounded-xl font-bold transition-all"
+                className="px-8 py-4 border border-gray-700 hover:bg-gray-800 text-white rounded-xl font-bold transition-all"
               >
-                Try Again
+                Try Another Routine
               </button>
             </div>
           </div>
         )}
 
-        {/* ── Task History ── */}
+        {/* ── Task History Using Actual API Data ── */}
         <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10">
-          <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
-            <span>📅</span> Recent Task History
+          <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 tracking-tight">
+            <span>📅</span> Your Daily Challenge History
           </h3>
-          <div className="space-y-3">
-            {MOCK_HISTORY.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-center justify-between p-5 bg-black/30 rounded-2xl border border-gray-800 hover:border-gray-700 transition-all"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold text-sm">
-                    ✓
+          <div className="space-y-4">
+            {taskHistory.length > 0 ? (
+              taskHistory.slice(0, 5).map((item, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between p-6 bg-black/40 rounded-2xl border border-gray-800 hover:border-blue-500/50 transition-all duration-300 group"
+                >
+                  <div className="flex items-start md:items-center flex-col md:flex-row gap-4">
+                    <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold text-xl shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+                      ✓
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white text-lg group-hover:text-blue-400 transition-colors">{item.topic}</p>
+                      <div className="flex items-center gap-3 mt-1.5 opacity-80">
+                         <p className="text-xs text-gray-400 font-mono bg-gray-800/80 px-2 py-0.5 rounded uppercase font-bold tracking-widest">{new Date(item.date).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}</p>
+                         <p className="text-xs text-blue-400 font-bold uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded">
+                            Score: {item.confidence_score}%
+                         </p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-white">{item.title}</p>
-                    <p className="text-sm text-gray-500">{item.date}</p>
+                  <div className="hidden md:flex items-center gap-3">
+                    <span className="text-green-400 font-bold text-sm bg-green-500/10 border border-green-500/20 px-4 py-1.5 rounded-lg whitespace-nowrap uppercase tracking-wider">
+                      Completed ✓
+                    </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-yellow-400 font-bold text-sm">+{item.xp} XP</span>
-                  <span className="text-green-400 font-bold text-sm bg-green-500/10 border border-green-500/20 px-3 py-1 rounded-lg">
-                    Completed ✓
-                  </span>
+              ))
+            ) : (
+                <div className="text-center p-8 bg-black/20 rounded-2xl border border-gray-800 border-dashed">
+                    <p className="text-gray-500 font-medium">No previous daily tasks found. Start your streak today!</p>
                 </div>
-              </div>
-            ))}
+            )}
           </div>
+          {taskHistory.length > 5 && (
+              <a href="/progress" className="mt-6 inline-block text-blue-400 font-semibold hover:text-white transition-colors">See all history →</a>
+          )}
         </div>
 
       </div>

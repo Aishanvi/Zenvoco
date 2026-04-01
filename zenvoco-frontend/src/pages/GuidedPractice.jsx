@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "../layout/DashboardLayout";
 import API from "../api/api";
@@ -47,20 +47,50 @@ const DIFFICULTY_COLOR = {
   Beginner:  "text-green-400",
   Moderate:  "text-yellow-400",
   Advanced:  "text-red-400",
+  Custom:    "text-gray-400",
 };
 
 const GuidedPractice = () => {
   const navigate = useNavigate();
 
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [customQuestion, setCustomQuestion] = useState("");
   const [audioBlob, setAudioBlob]         = useState(null);
   const [audioDuration, setAudioDuration] = useState(0);
   const [uploading, setUploading]         = useState(false);
+  const [filteredTopics, setFilteredTopics] = useState([]);
+
+  useEffect(() => {
+    // Get level from local storage setup during onboarding
+    let userLevel = localStorage.getItem("level") || "Beginner";
+    if (userLevel.toLowerCase() === "intermediate") {
+        userLevel = "Moderate";
+    }
+
+    // Attempt to filter topics by user level, fallback to all if none match
+    let matchingTopics = TOPICS.filter(
+      (t) => t.difficulty.toLowerCase() === userLevel.toLowerCase()
+    );
+    if (matchingTopics.length === 0) matchingTopics = TOPICS;
+    
+    // Add custom option
+    const customOption = {
+        label: "Write your own topic or question...",
+        category: "Custom Topic",
+        color: "border-gray-500/50 bg-gray-500/5",
+        badge: "text-gray-400 bg-gray-500/10 border-gray-500/20",
+        difficulty: "Custom",
+        isCustom: true
+    };
+
+    setFilteredTopics([...matchingTopics, customOption]);
+  }, []);
 
   const selectTopic = (topic) => {
     setSelectedTopic(topic);
     setAudioBlob(null);
     setAudioDuration(0);
+    setCustomQuestion("");
   };
 
   const handleAudioReady = (blob, dur) => {
@@ -71,9 +101,17 @@ const GuidedPractice = () => {
   // ── Submit to API ─────────────────────────────────────────────────────────
   const submitAudio = async () => {
     if (!audioBlob) return;
+    
+    // If it's a custom topic, validate they wrote a question
+    if (selectedTopic.isCustom && !customQuestion.trim()) {
+        alert("Please write your question first.");
+        return;
+    }
+
     setUploading(true);
     try {
-      const sessionRes = await API.post("/practice/start", { topic: selectedTopic.label });
+      const topicToSubmit = selectedTopic.isCustom ? customQuestion : selectedTopic.label;
+      const sessionRes = await API.post("/practice/start", { topic: topicToSubmit });
       const sessionId  = sessionRes.data.session_id;
 
       const formData = new FormData();
@@ -123,8 +161,8 @@ const GuidedPractice = () => {
         {/* ── Topic Selection ── */}
         {!selectedTopic && (
           <div className="space-y-4">
-            <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Choose a Speaking Topic</p>
-            {TOPICS.map((topic, i) => (
+            <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Questions curated for your level</p>
+            {filteredTopics.map((topic, i) => (
               <button
                 key={i}
                 onClick={() => selectTopic(topic)}
@@ -132,7 +170,7 @@ const GuidedPractice = () => {
               >
                 <div className="flex items-start justify-between gap-4">
                   <p className="text-white font-semibold text-lg leading-relaxed flex-1">
-                    "{topic.label}"
+                    {topic.isCustom ? "✨ Write your own practice question" : `"${topic.label}"`}
                   </p>
                   <span className="text-2xl mt-1">→</span>
                 </div>
@@ -140,9 +178,11 @@ const GuidedPractice = () => {
                   <span className={`text-xs px-3 py-1 rounded-full font-bold border ${topic.badge}`}>
                     {topic.category}
                   </span>
-                  <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[topic.difficulty]}`}>
-                    {topic.difficulty}
-                  </span>
+                  {!topic.isCustom && (
+                    <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[topic.difficulty]}`}>
+                        {topic.difficulty}
+                    </span>
+                  )}
                 </div>
               </button>
             ))}
@@ -158,20 +198,37 @@ const GuidedPractice = () => {
                 <span className={`text-xs px-3 py-1 rounded-full font-bold border ${selectedTopic.badge}`}>
                   {selectedTopic.category}
                 </span>
-                <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[selectedTopic.difficulty]}`}>
-                  {selectedTopic.difficulty}
-                </span>
+                {!selectedTopic.isCustom && (
+                    <span className={`text-xs font-semibold ${DIFFICULTY_COLOR[selectedTopic.difficulty]}`}>
+                        {selectedTopic.difficulty}
+                    </span>
+                )}
               </div>
-              <h3 className="text-xl text-white font-semibold leading-relaxed">
-                📝 "{selectedTopic.label}"
-              </h3>
-              <p className="text-gray-400 text-sm mt-3">
+              
+              {selectedTopic.isCustom ? (
+                <div className="space-y-4">
+                  <label className="text-white font-semibold text-lg">Enter your question or topic:</label>
+                  <textarea
+                    value={customQuestion}
+                    onChange={(e) => setCustomQuestion(e.target.value)}
+                    placeholder="e.g., Tell me about a time you resolved a conflict at work."
+                    className="w-full bg-black/50 border border-gray-600 rounded-xl p-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+                    rows={3}
+                  />
+                </div>
+              ) : (
+                <h3 className="text-xl text-white font-semibold leading-relaxed">
+                  📝 "{selectedTopic.label}"
+                </h3>
+              )}
+
+              <p className="text-gray-400 text-sm mt-4">
                 Record your response with the microphone, or upload a pre-recorded audio file.
               </p>
             </div>
 
             {/* Audio capture */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 space-y-8">
+            <div className={`bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 space-y-8 ${(selectedTopic.isCustom && !customQuestion.trim()) ? "opacity-50 pointer-events-none" : ""}`}>
               <AudioInput
                 onAudioReady={handleAudioReady}
                 onReset={() => { setAudioBlob(null); setAudioDuration(0); }}
