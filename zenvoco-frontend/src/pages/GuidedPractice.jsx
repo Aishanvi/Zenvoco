@@ -47,7 +47,7 @@ const DIFFICULTY_COLOR = {
   Beginner:  "text-green-400",
   Moderate:  "text-yellow-400",
   Advanced:  "text-red-400",
-  Custom:    "text-gray-400",
+  Custom:    "text-gray-600 dark:text-gray-400",
 };
 
 const GuidedPractice = () => {
@@ -78,7 +78,7 @@ const GuidedPractice = () => {
         label: "Write your own topic or question...",
         category: "Custom Topic",
         color: "border-gray-500/50 bg-gray-500/5",
-        badge: "text-gray-400 bg-gray-500/10 border-gray-500/20",
+        badge: "text-gray-600 dark:text-gray-400 bg-gray-500/10 border-gray-500/20",
         difficulty: "Custom",
         isCustom: true
     };
@@ -142,7 +142,7 @@ const GuidedPractice = () => {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className="text-4xl font-extrabold tracking-tight">Guided Practice</h2>
-            <p className="text-gray-400 mt-2">
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
               {!selectedTopic
                 ? "Choose a topic, record your response, and get detailed AI feedback."
                 : `Topic: ${selectedTopic?.category}`}
@@ -151,7 +151,7 @@ const GuidedPractice = () => {
           {selectedTopic && (
             <button
               onClick={() => { setSelectedTopic(null); setAudioBlob(null); }}
-              className="text-sm text-gray-400 hover:text-white border border-gray-700 px-4 py-2 rounded-xl transition-all"
+              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-xl transition-all"
             >
               ← Change Topic
             </button>
@@ -161,7 +161,7 @@ const GuidedPractice = () => {
         {/* ── Topic Selection ── */}
         {!selectedTopic && (
           <div className="space-y-4">
-            <p className="text-gray-400 text-sm font-medium uppercase tracking-widest">Questions curated for your level</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-widest">Questions curated for your level</p>
             {filteredTopics.map((topic, i) => (
               <button
                 key={i}
@@ -169,7 +169,7 @@ const GuidedPractice = () => {
                 className={`w-full text-left p-6 rounded-3xl border-2 transition-all duration-300 hover:-translate-y-0.5 ${topic.color} hover:shadow-lg`}
               >
                 <div className="flex items-start justify-between gap-4">
-                  <p className="text-white font-semibold text-lg leading-relaxed flex-1">
+                  <p className="text-gray-900 dark:text-white font-semibold text-lg leading-relaxed flex-1">
                     {topic.isCustom ? "✨ Write your own practice question" : `"${topic.label}"`}
                   </p>
                   <span className="text-2xl mt-1">→</span>
@@ -207,28 +207,28 @@ const GuidedPractice = () => {
               
               {selectedTopic.isCustom ? (
                 <div className="space-y-4">
-                  <label className="text-white font-semibold text-lg">Enter your question or topic:</label>
+                  <label className="text-gray-900 dark:text-white font-semibold text-lg">Enter your question or topic:</label>
                   <textarea
                     value={customQuestion}
                     onChange={(e) => setCustomQuestion(e.target.value)}
                     placeholder="e.g., Tell me about a time you resolved a conflict at work."
-                    className="w-full bg-black/50 border border-gray-600 rounded-xl p-4 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
+                    className="w-full bg-white dark:bg-black/50 border border-gray-600 rounded-xl p-4 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none"
                     rows={3}
                   />
                 </div>
               ) : (
-                <h3 className="text-xl text-white font-semibold leading-relaxed">
+                <h3 className="text-xl text-gray-900 dark:text-white font-semibold leading-relaxed">
                   📝 "{selectedTopic.label}"
                 </h3>
               )}
 
-              <p className="text-gray-400 text-sm mt-4">
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
                 Record your response with the microphone, or upload a pre-recorded audio file.
               </p>
             </div>
 
             {/* Audio capture */}
-            <div className={`bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 space-y-8 ${(selectedTopic.isCustom && !customQuestion.trim()) ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className={`bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 space-y-8 ${(selectedTopic.isCustom && !customQuestion.trim()) ? "opacity-50 pointer-events-none" : ""}`}>
               <AudioInput
                 onAudioReady={handleAudioReady}
                 onReset={() => { setAudioBlob(null); setAudioDuration(0); }}
@@ -240,7 +240,7 @@ const GuidedPractice = () => {
                 <div className="flex gap-4 flex-wrap">
                   <button
                     onClick={submitAudio}
-                    className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                    className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
                   >
                     ✅ Finish & Analyse
                   </button>
@@ -256,9 +256,9 @@ const GuidedPractice = () => {
             </div>
 
             {/* Tips panel */}
-            <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6">
+            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
               <h4 className="text-sm uppercase tracking-widest text-gray-500 font-bold mb-4">💡 Quick Tips</h4>
-              <ul className="grid md:grid-cols-3 gap-4 text-sm text-gray-400">
+              <ul className="grid md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
                 <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Speak in complete sentences — avoid trailing off.</span></li>
                 <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Use pauses intentionally instead of filler words.</span></li>
                 <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Structure your answer: Context → Action → Result.</span></li>

@@ -1,9 +1,118 @@
-from fastapi import APIRouter, Depends, HTTPException
-from auth.jwt_handler import get_current_user_id
-from database import progress_collection, users_collection, practice_collection
+from datetime import datetime, timezone
+from typing import Any
+
 from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Query, Response
+
+from auth.jwt_handler import get_current_user_id
+from database import practice_collection, progress_collection, users_collection
+from services.progress_graph_service import build_progress_graph_svg
 
 router = APIRouter(prefix="/progress", tags=["Progress Monitoring"])
+
+MAX_TIMELINE_POINTS = 60
+FETCH_BUFFER = 500
+
+
+def _parse_progress_date(value: Any) -> datetime | None:
+    if isinstance(value, datetime):
+        if value.tzinfo is None:
+            return value.replace(tzinfo=timezone.utc)
+        return value
+
+    if isinstance(value, str) and value.strip():
+        cleaned = value.strip()
+        if cleaned.endswith("Z"):
+            cleaned = cleaned[:-1] + "+00:00"
+        try:
+            parsed = datetime.fromisoformat(cleaned)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            return parsed.replace(tzinfo=timezone.utc)
+        return parsed
+
+    return None
+
+
+def _serialize_progress_date(value: Any) -> str | None:
+    parsed = _parse_progress_date(value)
+    if not parsed:
+        return None
+    return parsed.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(round(float(value)))
+    except (TypeError, ValueError):
+        return default
+
+
+async def _build_progress_analytics(user_id: str) -> dict:
+    user = await users_collection.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    records = await progress_collection.find({"user_id": user_id}).to_list(length=FETCH_BUFFER)
+    records.sort(
+        key=lambda record: (
+            _parse_progress_date(record.get("date")) or datetime.min.replace(tzinfo=timezone.utc),
+            str(record.get("_id", "")),
+        )
+    )
+    records = records[-MAX_TIMELINE_POINTS:]
+
+    session_ids = [
+        ObjectId(record["session_id"])
+        for record in records
+        if isinstance(record.get("session_id"), str) and ObjectId.is_valid(record["session_id"])
+    ]
+
+    session_topics: dict[str, str] = {}
+    if session_ids:
+        sessions = await practice_collection.find(
+            {"_id": {"$in": session_ids}, "user_id": user_id}
+        ).to_list(length=len(session_ids))
+        session_topics = {
+            str(session["_id"]): session.get("topic", "Practice Session")
+            for session in sessions
+        }
+
+    fallback_sessions = await practice_collection.find({"user_id": user_id}).sort("created_at", 1).limit(
+        MAX_TIMELINE_POINTS
+    ).to_list(length=MAX_TIMELINE_POINTS)
+    fallback_topics = [session.get("topic", "Practice Session") for session in fallback_sessions]
+
+    timeline = []
+    for index, record in enumerate(records):
+        session_id = record.get("session_id")
+        timeline.append(
+            {
+                "id": str(record["_id"]),
+                "session_id": session_id,
+                "date": _serialize_progress_date(record.get("date")),
+                "confidence_score": _safe_int(record.get("confidence_score")),
+                "duration": _safe_int(record.get("duration")),
+                "topic": session_topics.get(session_id)
+                or (fallback_topics[index] if index < len(fallback_topics) else "Practice Session"),
+            }
+        )
+
+    latest_score = timeline[-1]["confidence_score"] if timeline else 0
+    avg_duration = (
+        sum(item.get("duration", 0) for item in timeline) // len(timeline)
+        if timeline
+        else 0
+    )
+
+    return {
+        "user_id": user_id,
+        "total_sessions": len(timeline),
+        "latest_confidence_score": latest_score,
+        "avg_duration": avg_duration,
+        "timeline_metrics": timeline,
+    }
 
 
 @router.get("/")
@@ -14,58 +123,24 @@ async def retrieve_analytics_timeline(user_id: str = Depends(get_current_user_id
     Used for Chart.js / Recharts dashboard visualizations.
     """
 
-    # 1️⃣ Verify user exists
-    user = await users_collection.find_one({"_id": ObjectId(user_id)})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+    return await _build_progress_analytics(user_id)
 
-    # 2️⃣ Fetch progress records (chronological, max 60)
-    cursor = progress_collection.find(
-        {"user_id": user_id}
-    ).sort("date", 1).limit(60)
 
-    records = await cursor.to_list(length=60)
+@router.get("/graph")
+async def retrieve_progress_graph(
+    width: int = Query(960, ge=480, le=1600),
+    height: int = Query(420, ge=280, le=900),
+    user_id: str = Depends(get_current_user_id),
+):
+    """
+    Returns the authenticated user's progress timeline as an SVG line graph.
+    Useful when the frontend needs a generated image instead of raw chart data.
+    """
 
-    # 3️⃣ Extract unique session_ids referenced in progress records
-    #    Progress records are inserted by practice_routes.py at submit time,
-    #    but the progress collection does NOT store session_id yet — so we
-    #    do a parallel lookup of the user's sessions ordered by date to align topics.
-    # 
-    #    Strategy: fetch all practice sessions for the user (sorted by created_at ASC),
-    #    then zip them with the progress records by position. This is accurate because
-    #    every submit creates exactly one progress entry at the same moment.
-    session_cursor = practice_collection.find(
-        {"user_id": user_id}
-    ).sort("created_at", 1).limit(60)
-    sessions = await session_cursor.to_list(length=60)
-
-    # Build a position-indexed topic map (index → topic string)
-    topic_map = {i: s.get("topic", "Practice Session") for i, s in enumerate(sessions)}
-
-    # 4️⃣ Convert ObjectId → string and build timeline with topic
-    timeline = []
-    for i, record in enumerate(records):
-        record["_id"] = str(record["_id"])
-        timeline.append({
-            "date": record.get("date"),
-            "confidence_score": record.get("confidence_score", 0),
-            "duration": record.get("duration", 0),
-            "topic": topic_map.get(i, "Practice Session"),
-        })
-
-    # 5️⃣ Latest confidence score
-    latest_score = timeline[-1]["confidence_score"] if timeline else 0
-
-    # 6️⃣ Calculate Average Duration
-    avg_duration = 0
-    if timeline:
-        total_duration = sum(t.get("duration", 0) for t in timeline)
-        avg_duration = total_duration // len(timeline)
-
-    return {
-        "user_id": user_id,
-        "total_sessions": len(timeline),
-        "latest_confidence_score": latest_score,
-        "avg_duration": avg_duration,
-        "timeline_metrics": timeline
-    }
+    analytics = await _build_progress_analytics(user_id)
+    graph_svg = build_progress_graph_svg(
+        analytics["timeline_metrics"],
+        width=width,
+        height=height,
+    )
+    return Response(content=graph_svg, media_type="image/svg+xml")

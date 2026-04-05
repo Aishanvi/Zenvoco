@@ -129,8 +129,8 @@ const ListenMode = () => {
 
         {/* Header */}
         <div>
-          <h2 className="text-4xl font-extrabold tracking-tight text-white">Listen & Observe</h2>
-          <p className="text-gray-400 mt-2">
+          <h2 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Listen & Observe</h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Listen to expert examples, read the transcript, and study the technique breakdown.
           </p>
         </div>
@@ -144,8 +144,8 @@ const ListenMode = () => {
                 key={ex.id}
                 onClick={() => selectExample(ex.id)}
                 className={`block w-full text-left px-5 py-5 rounded-2xl transition-all duration-300 border ${selectedId === ex.id
-                  ? "bg-blue-600 border-blue-500 text-white font-bold shadow-lg"
-                  : "bg-gray-900 border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-white"
+                  ? "bg-blue-600 border-blue-500 text-gray-900 dark:text-white font-bold shadow-lg"
+                  : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-white"
                   }`}
               >
                 <div className="flex items-center gap-3 mb-2">
@@ -162,13 +162,13 @@ const ListenMode = () => {
             ))}
 
             {/* Legend */}
-            <div className="mt-4 bg-gray-900/60 border border-gray-800 rounded-2xl p-5 space-y-2">
+            <div className="mt-4 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 space-y-2">
               <p className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-3">After Listening</p>
-              <p className="text-sm text-gray-400 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                 ✦ Study the insight breakdown to understand <em>why</em> each technique works.
               </p>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                ✦ Then go to <strong className="text-white">Guided Practice</strong> and try it yourself.
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                ✦ Then go to <strong className="text-gray-900 dark:text-white">Guided Practice</strong> and try it yourself.
               </p>
             </div>
           </div>
@@ -188,13 +188,13 @@ const ListenMode = () => {
             />
 
             {/* Example Info Card */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 relative overflow-hidden">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[60px] -z-10" />
               <div className="flex items-start gap-4 mb-4">
                 <span className="text-4xl">{example.icon}</span>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-white">{example.label}</h3>
-                  <p className="text-gray-400 text-sm mt-1">{example.description}</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{example.label}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{example.description}</p>
                 </div>
                 <span className={`text-xs px-3 py-1 rounded-full font-semibold border ${example.badgeColor}`}>
                   {example.badge}
@@ -204,7 +204,7 @@ const ListenMode = () => {
               {/* Key Techniques Tags */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {example.keyTechniques.map((t, i) => (
-                  <span key={i} className="bg-gray-800 border border-gray-700 text-gray-300 text-xs px-3 py-1.5 rounded-xl font-medium">
+                  <span key={i} className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded-xl font-medium">
                     {t}
                   </span>
                 ))}
@@ -212,7 +212,7 @@ const ListenMode = () => {
             </div>
 
             {/* Audio Player */}
-            <div className="bg-gray-900/50 border border-gray-800 rounded-3xl p-8">
+            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
               <h4 className="text-sm uppercase tracking-widest font-bold text-blue-400 mb-6 flex items-center gap-2">
                 <span>🎧</span> Audio Simulation
               </h4>
@@ -228,7 +228,7 @@ const ListenMode = () => {
 
                 <div className="flex-1 space-y-3">
                   <div
-                    className="h-2.5 w-full bg-gray-800 rounded-full overflow-hidden cursor-pointer"
+                    className="h-2.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden cursor-pointer"
                     onClick={(e) => {
                       if (!audioRef.current || !audioRef.current.duration) return;
 
@@ -251,61 +251,61 @@ const ListenMode = () => {
                   </div>
                 </div>
 
-                <button onClick={resetPlayback} className="text-gray-500 hover:text-white transition-colors text-sm font-medium shrink-0">
+                <button onClick={resetPlayback} className="text-gray-500 hover:text-gray-900 dark:text-white transition-colors text-sm font-medium shrink-0">
                   ↺
                 </button>
               </div>
             </div>
 
             {/* Transcript */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
               <div className="flex items-center justify-between mb-6">
                 <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2">
                   <span>📝</span> Transcript
                 </h4>
                 <button
                   onClick={() => setShowTranscript((v) => !v)}
-                  className="text-xs text-gray-400 hover:text-white border border-gray-700 px-3 py-1.5 rounded-lg transition-all"
+                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg transition-all"
                 >
                   {showTranscript ? "Hide" : "Show"}
                 </button>
               </div>
 
               {showTranscript ? (
-                <div className="bg-black/40 border border-gray-800 rounded-2xl p-6 text-gray-300 leading-relaxed text-lg">
+                <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
                   "{example.transcript}"
                 </div>
               ) : (
-                <div className="bg-black/40 border border-gray-800 rounded-2xl p-6 text-gray-600 text-center select-none">
-                  <p>Listen to the example first, or click <strong className="text-gray-400">Show</strong> to reveal the transcript.</p>
+                <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-gray-600 text-center select-none">
+                  <p>Listen to the example first, or click <strong className="text-gray-600 dark:text-gray-400">Show</strong> to reveal the transcript.</p>
                 </div>
               )}
             </div>
 
             {/* Speaking Insights */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
               <h4 className="text-sm uppercase tracking-widest font-bold text-purple-400 flex items-center gap-2 mb-6">
                 <span>✨</span> Technique Breakdown
               </h4>
               <div className="grid md:grid-cols-2 gap-4">
                 {example.insights.map(({ label, text, color }, i) => (
-                  <div key={i} className="bg-black/40 border border-gray-800 rounded-2xl p-5">
+                  <div key={i} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
                     <p className={`font-bold text-sm mb-2 ${color}`}>{label}</p>
-                    <p className="text-gray-400 text-sm leading-relaxed">{text}</p>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{text}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* CTA */}
-            <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
+            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
               <div>
-                <p className="font-semibold text-white">Now try it yourself</p>
-                <p className="text-sm text-gray-400 mt-1">Apply this technique in a Guided Practice session and get AI feedback.</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Now try it yourself</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Apply this technique in a Guided Practice session and get AI feedback.</p>
               </div>
               <a
                 href="/practice"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shrink-0 shadow-lg shadow-blue-600/20"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold transition-all shrink-0 shadow-lg shadow-blue-600/20"
               >
                 Go to Practice →
               </a>
