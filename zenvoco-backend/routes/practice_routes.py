@@ -73,8 +73,8 @@ async def upload_speech_audio(
         raise HTTPException(status_code=400, detail="Uploaded audio file is empty.")
         
     # Kickoff Analytics Engines Pipelines
-    transcription = await process_audio_transcription(temp_media_path)
-    analysis_data = await process_generative_feedback(transcription, session.get("topic"))
+    transcription_data = await process_audio_transcription(temp_media_path)
+    analysis_data = await process_generative_feedback(transcription_data, session.get("topic"))
     
     # Safely extract the inner evaluation dictionary
     ai_eval = analysis_data.get("ai_evaluation", {})
@@ -82,7 +82,7 @@ async def upload_speech_audio(
     # Mirror results inside Main Session Collection History
     update_data = {
         "audio_file": temp_media_path,
-        "transcription": transcription,
+        "transcription": transcription_data.get("text", ""),
         "ai_feedback": ai_eval.get("ai_feedback"),
         "confidence_score": ai_eval.get("confidence_score"),
         "duration": duration
@@ -108,6 +108,7 @@ async def upload_speech_audio(
     # Also persist speech_clarity, pace, filler_words so Dashboard Avg Fluency is non-zero.
     await progress_collection.insert_one({
         "user_id": user_id,
+        "session_id": session_id,
         "confidence_score": ai_eval.get("confidence_score"),
         "speech_clarity": ai_eval.get("speech_clarity"),
         "pace": ai_eval.get("pace"),
@@ -122,6 +123,6 @@ async def upload_speech_audio(
     
     return {
         "status": "Inference Complete",
-        "transcription_detected": transcription,
+        "transcription_detected": transcription_data.get("text", ""),
         "ai_evaluation": ai_eval
     }

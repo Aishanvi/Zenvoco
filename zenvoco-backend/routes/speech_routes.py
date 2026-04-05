@@ -40,8 +40,8 @@ async def process_speech_one_off(
             os.remove(tmp_path)
         raise HTTPException(status_code=400, detail="Uploaded audio file is empty.")
         
-    transcription = await process_audio_transcription(tmp_path)
-    feedback_data = await process_generative_feedback(transcription)
+    transcription_data = await process_audio_transcription(tmp_path)
+    feedback_data = await process_generative_feedback(transcription_data)
     
     # Cleanup memory trace
     if os.path.exists(tmp_path):
@@ -49,7 +49,7 @@ async def process_speech_one_off(
         
     return {
         "status": "success",
-        "transcription_result": transcription,
+        "transcription_result": transcription_data.get("text", ""),
         "ai_evaluation": feedback_data.get("ai_evaluation", {}),
         "feedback_object": feedback_data
     }
