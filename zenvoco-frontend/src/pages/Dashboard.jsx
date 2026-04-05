@@ -30,7 +30,7 @@ const Dashboard = () => {
   if (!dashboardData) {
     return (
       <DashboardLayout>
-        <div className="text-white p-10">Loading dashboard...</div>
+        <div className="text-gray-900 dark:text-white p-10">Loading dashboard...</div>
       </DashboardLayout>
     );
   }
@@ -42,14 +42,14 @@ const Dashboard = () => {
           <h2 className="text-4xl font-extrabold tracking-tight">
             Dashboard Overview
           </h2>
-          <p className="text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Welcome back, {dashboardData.user_profile?.name || "User"}! Track your communication skills journey.
           </p>
         </div>
 
         <Link
           to="/practice"
-          className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-bold transition-all"
+          className="bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white px-6 py-3 rounded-xl font-bold transition-all"
         >
           Start New Session
         </Link>
@@ -61,14 +61,14 @@ const Dashboard = () => {
 
         {/* Confidence Score */}
 
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 hover:border-blue-500/50 transition-all duration-300 group">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:border-blue-500/50 transition-all duration-300 group">
           <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-500 text-2xl mb-4 group-hover:scale-110 transition-transform">
             🎯
           </div>
 
-          <h3 className="text-gray-400 font-medium">Confidence Score</h3>
+          <h3 className="text-gray-600 dark:text-gray-400 font-medium">Confidence Score</h3>
 
-          <p className="text-4xl font-bold mt-2 text-white">
+          <p className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
             {dashboardData.metrics_preview?.[0]?.confidence_score || 0}
             <span className="text-xl text-blue-500">%</span>
           </p>
@@ -76,14 +76,14 @@ const Dashboard = () => {
 
         {/* Total Sessions */}
 
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 hover:border-green-500/50 transition-all duration-300 group">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:border-green-500/50 transition-all duration-300 group">
           <div className="w-12 h-12 bg-green-500/10 rounded-xl flex items-center justify-center text-green-500 text-2xl mb-4 group-hover:scale-110 transition-transform">
             🔥
           </div>
 
-          <h3 className="text-gray-400 font-medium">Recent Sessions</h3>
+          <h3 className="text-gray-600 dark:text-gray-400 font-medium">Recent Sessions</h3>
 
-          <p className="text-4xl font-bold mt-2 text-white">
+          <p className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
             {dashboardData.history_preview?.length || 0}
             <span className="text-xl text-green-500"> Sessions</span>
           </p>
@@ -91,14 +91,14 @@ const Dashboard = () => {
 
         {/* Avg Fluency */}
 
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 group">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:border-purple-500/50 transition-all duration-300 group">
           <div className="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-500 text-2xl mb-4 group-hover:scale-110 transition-transform">
             🎙️
           </div>
 
-          <h3 className="text-gray-400 font-medium">Avg Fluency</h3>
+          <h3 className="text-gray-600 dark:text-gray-400 font-medium">Avg Fluency</h3>
 
-          <p className="text-4xl font-bold mt-2 text-white">
+          <p className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
             {dashboardData.metrics_preview && dashboardData.metrics_preview.length > 0
               ? Math.round(
                   dashboardData.metrics_preview.reduce((sum, m) => sum + (m.speech_clarity || 0), 0) /
@@ -111,17 +111,17 @@ const Dashboard = () => {
 
         {/* Target Progress */}
 
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 hover:border-pink-500/50 transition-all duration-300 group">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:border-pink-500/50 transition-all duration-300 group">
 
           <div className="w-12 h-12 bg-pink-500/10 rounded-xl flex items-center justify-center text-pink-500 text-2xl mb-4 group-hover:scale-110 transition-transform">
             📉
           </div>
 
-          <h3 className="text-gray-400 font-medium">
+          <h3 className="text-gray-600 dark:text-gray-400 font-medium">
             Overall Progress
           </h3>
 
-          <p className="text-4xl font-bold mt-2 text-white">
+          <p className="text-4xl font-bold mt-2 text-gray-900 dark:text-white">
             {dashboardData.metrics_preview?.length ? "On Track" : "Starting"}
             <span className="text-xl text-pink-500"></span>
           </p>
@@ -136,10 +136,10 @@ const Dashboard = () => {
 
         {/* Confidence Chart - Quick Bar Chart */}
 
-        <div className="lg:col-span-2 bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 relative overflow-hidden">
+        <div className="lg:col-span-2 bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 relative overflow-hidden">
           <h3 className="text-xl font-bold mb-8">Recent Confidence Trend</h3>
 
-          <div className="h-64 flex items-end justify-between gap-2 px-4 border-b border-l border-gray-800 p-4">
+          <div className="h-64 flex items-end justify-between gap-2 px-4 border-b border-l border-gray-200 dark:border-gray-800 p-4">
             {dashboardData.metrics_preview && dashboardData.metrics_preview.length > 0 ? (
               dashboardData.metrics_preview.slice(0, 5).reverse().map((m, i) => (
                 <div key={i} className="w-full bg-blue-600/50 rounded-t-lg transition-all" style={{ height: `${m.confidence_score || 10}%` }}></div>
@@ -152,7 +152,7 @@ const Dashboard = () => {
 
         {/* Recent Activity */}
 
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
           <h3 className="text-xl font-bold mb-6">Recent Practice History</h3>
 
           <div className="space-y-6">
@@ -164,8 +164,8 @@ const Dashboard = () => {
                     🎤
                   </div>
                   <div>
-                    <h4 className="font-medium text-white line-clamp-1">{session.topic}</h4>
-                    <p className="text-sm text-gray-400">
+                    <h4 className="font-medium text-gray-900 dark:text-white line-clamp-1">{session.topic}</h4>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
                       {new Date(session.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -179,7 +179,7 @@ const Dashboard = () => {
 
           <Link
             to="/progress"
-            className="block w-full text-center mt-8 py-3 rounded-xl border border-gray-800 text-gray-300 hover:text-white hover:bg-gray-800 transition-all"
+            className="block w-full text-center mt-8 py-3 rounded-xl border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:text-white hover:bg-gray-100 dark:bg-gray-800 transition-all"
           >
             View All Progress
           </Link>

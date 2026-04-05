@@ -126,7 +126,7 @@ const LearnMode = () => {
         {/* Header */}
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight">Learn Mode</h2>
-          <p className="text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-400 mt-2">
             Study guided frameworks for every high-stakes speaking scenario.
           </p>
         </div>
@@ -143,8 +143,8 @@ const LearnMode = () => {
                   onClick={() => { setSelectedId(t.id); setActiveTab("guide"); }}
                   className={`block w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 border ${
                     selectedId === t.id
-                      ? `${tc.active} text-white font-bold shadow-lg`
-                      : "bg-gray-900 border-gray-800 text-gray-400 hover:bg-gray-800 hover:text-white"
+                      ? `${tc.active} text-gray-900 dark:text-white font-bold shadow-lg`
+                      : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-white"
                   }`}
                 >
                   <span className="mr-3">{t.icon}</span>{t.label}
@@ -153,9 +153,9 @@ const LearnMode = () => {
             })}
 
             {/* Quick tip card */}
-            <div className="mt-6 bg-gray-900/60 border border-gray-800 rounded-2xl p-5">
+            <div className="mt-6 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
               <p className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-2">💡 Study Tip</p>
-              <p className="text-sm text-gray-400 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                 Read the framework, then try recording yourself using the Guided Practice mode to apply it.
               </p>
             </div>
@@ -165,16 +165,16 @@ const LearnMode = () => {
           <div className="lg:col-span-3 space-y-6">
 
             {/* Topic Hero */}
-            <div className={`relative rounded-3xl p-8 border border-gray-800 bg-gray-900/50 backdrop-blur-xl overflow-hidden`}>
+            <div className={`relative rounded-3xl p-8 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl overflow-hidden`}>
               <div className={`absolute top-0 right-0 w-64 h-64 ${c.glow} rounded-full blur-[80px] -z-10`} />
               <div className="flex items-center gap-4 mb-3">
                 <span className="text-5xl">{topic.icon}</span>
                 <div>
                   <h3 className={`text-3xl font-extrabold ${c.heading}`}>{topic.label}</h3>
-                  <p className="text-gray-400 text-sm mt-1 italic">{topic.tagline}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1 italic">{topic.tagline}</p>
                 </div>
               </div>
-              <p className="text-gray-300 text-lg leading-relaxed">{topic.explanation}</p>
+              <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">{topic.explanation}</p>
             </div>
 
             {/* Tab switcher */}
@@ -190,7 +190,7 @@ const LearnMode = () => {
                   className={`px-5 py-2.5 rounded-xl font-semibold text-sm transition-all border ${
                     activeTab === key
                       ? "bg-white text-black border-white"
-                      : "bg-gray-900 border-gray-800 text-gray-400 hover:text-white hover:border-gray-600"
+                      : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white hover:border-gray-600"
                   }`}
                 >
                   {label}
@@ -202,19 +202,19 @@ const LearnMode = () => {
             {activeTab === "guide" && (
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Structure */}
-                <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 space-y-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 space-y-4">
                   <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2">
                     <span>📐</span> Step-by-Step Structure
                   </h4>
                   <ol className="space-y-4">
                     {topic.structure.map(({ step, detail }, i) => (
                       <li key={i} className="flex gap-4">
-                        <span className={`flex-shrink-0 w-7 h-7 rounded-full ${c.dot} text-white text-xs font-bold flex items-center justify-center`}>
+                        <span className={`flex-shrink-0 w-7 h-7 rounded-full ${c.dot} text-gray-900 dark:text-white text-xs font-bold flex items-center justify-center`}>
                           {i + 1}
                         </span>
                         <div>
-                          <p className="text-white font-semibold">{step}</p>
-                          <p className="text-gray-400 text-sm mt-0.5">{detail}</p>
+                          <p className="text-gray-900 dark:text-white font-semibold">{step}</p>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm mt-0.5">{detail}</p>
                         </div>
                       </li>
                     ))}
@@ -222,13 +222,13 @@ const LearnMode = () => {
                 </div>
 
                 {/* AI Hints */}
-                <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 space-y-4">
+                <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 space-y-4">
                   <h4 className="text-sm uppercase tracking-widest font-bold text-pink-400 flex items-center gap-2">
                     <span>🤖</span> AI Coaching Hints
                   </h4>
                   <ul className="space-y-4">
                     {topic.hints.map((hint, i) => (
-                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                      <li key={i} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                         <span className="text-pink-400 mt-0.5 text-lg">✦</span>
                         <span className="leading-relaxed">{hint}</span>
                       </li>
@@ -241,26 +241,26 @@ const LearnMode = () => {
             {/* ── Tab: Do's & Don'ts ── */}
             {activeTab === "dos" && (
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-gray-900/50 backdrop-blur-xl border border-green-500/20 rounded-3xl p-8">
+                <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-green-500/20 rounded-3xl p-8">
                   <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2 mb-6">
                     <span>✅</span> Do's
                   </h4>
                   <ul className="space-y-4">
                     {topic.dos.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                      <li key={i} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                         <span className="text-green-400 text-xl mt-0.5">✓</span>
                         <span>{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div className="bg-gray-900/50 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8">
+                <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-red-500/20 rounded-3xl p-8">
                   <h4 className="text-sm uppercase tracking-widest font-bold text-red-400 flex items-center gap-2 mb-6">
                     <span>🚫</span> Don'ts
                   </h4>
                   <ul className="space-y-4">
                     {topic.donts.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-gray-300">
+                      <li key={i} className="flex items-start gap-3 text-gray-700 dark:text-gray-300">
                         <span className="text-red-400 text-xl mt-0.5">✗</span>
                         <span>{item}</span>
                       </li>
@@ -286,14 +286,14 @@ const LearnMode = () => {
             )}
 
             {/* CTA */}
-            <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
+            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
               <div>
-                <p className="font-semibold text-white">Ready to apply what you've learned?</p>
-                <p className="text-sm text-gray-400 mt-1">Open Guided Practice and use this framework in a recorded session.</p>
+                <p className="font-semibold text-gray-900 dark:text-white">Ready to apply what you've learned?</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Open Guided Practice and use this framework in a recorded session.</p>
               </div>
               <a
                 href="/practice"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold transition-all shrink-0 shadow-[0_0_20px_rgba(59,130,246,0.3)]"
               >
                 Go to Practice →
               </a>

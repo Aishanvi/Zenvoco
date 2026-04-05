@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "69b2e4e6ff5b60e4a5b6f712"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 65,
+  "date": "2026-03-01T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e4faff5b60e4a5b6f714"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 68,
+  "date": "2026-03-02T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e511ff5b60e4a5b6f716"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 70,
+  "date": "2026-03-03T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e526ff5b60e4a5b6f718"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 72,
+  "date": "2026-03-04T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e53fff5b60e4a5b6f71a"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 74,
+  "date": "2026-03-05T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e569ff5b60e4a5b6f71c"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 76,
+  "date": "2026-03-06T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e779ff5b60e4a5b6f71e"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 78,
+  "date": "2026-03-07T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e7a5ff5b60e4a5b6f720"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 80,
+  "date": "2026-03-08T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e7bfff5b60e4a5b6f722"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 82,
+  "date": "2026-03-09T00:00:00Z"
+},
+{
+  "_id": {
+    "$oid": "69b2e7e4ff5b60e4a5b6f724"
+  },
+  "user_id": "PASTE_USER_ID_HERE",
+  "session_id": "PASTE_SESSION_ID_HERE",
+  "confidence_score": 85,
+  "date": "2026-03-10T00:00:00Z"
+}]

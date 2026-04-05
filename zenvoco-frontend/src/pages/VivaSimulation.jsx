@@ -103,7 +103,7 @@ const VivaSimulation = () => {
         {/* Page Header */}
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight">Viva Simulation</h2>
-          <p className="text-gray-400 mt-2">Test your skills in a realistic AI mock interview session.</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-2">Test your skills in a realistic AI mock interview session.</p>
         </div>
 
         {/* ── STATE 1: Intro splash ── */}
@@ -111,13 +111,13 @@ const VivaSimulation = () => {
           <div className="bg-gradient-to-br from-pink-500/10 to-transparent backdrop-blur-xl border border-pink-500/20 rounded-3xl p-16 text-center relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 rounded-full blur-[80px] group-hover:bg-pink-500/20 transition-all -z-10" />
             <span className="text-7xl mb-8 block">🔥</span>
-            <h3 className="text-3xl font-bold mb-4 text-white">Ready for the heat?</h3>
-            <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            <h3 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Ready for the heat?</h3>
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto">
               You will be asked {TOTAL_QUESTIONS} questions by an AI interviewer. Record your answer to each, then submit to advance.
             </p>
             <button
               onClick={() => setStarted(true)}
-              className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] hover:-translate-y-1"
+              className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_30px_rgba(236,72,153,0.3)] hover:shadow-[0_0_40px_rgba(236,72,153,0.5)] hover:-translate-y-1"
             >
               Start Simulation
             </button>
@@ -130,11 +130,11 @@ const VivaSimulation = () => {
 
             {/* Progress bar */}
             <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-400 font-medium">
+              <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 font-medium">
                 <span>Question {currentQ + 1} of {TOTAL_QUESTIONS}</span>
                 <span>{Math.round(((currentQ) / TOTAL_QUESTIONS) * 100)}% complete</span>
               </div>
-              <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-pink-500 to-purple-500 rounded-full transition-all duration-700"
                   style={{ width: `${(currentQ / TOTAL_QUESTIONS) * 100}%` }}
@@ -143,24 +143,24 @@ const VivaSimulation = () => {
             </div>
 
             {/* Question Card */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 relative overflow-hidden group">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 relative overflow-hidden group">
               <div className="absolute top-0 left-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[60px] group-hover:bg-blue-500/20 transition-all -z-10" />
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-bold text-blue-400 flex items-center gap-2">
                   <span>🤖</span> AI Interviewer
                 </h3>
-                <span className="bg-black/50 border border-gray-800 text-gray-400 px-4 py-1 rounded-full text-sm font-medium">
+                <span className="bg-white dark:bg-black/50 border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 px-4 py-1 rounded-full text-sm font-medium">
                   Question {currentQ + 1} of {TOTAL_QUESTIONS}
                 </span>
               </div>
-              <p className="text-2xl font-medium text-white leading-relaxed">
+              <p className="text-2xl font-medium text-gray-900 dark:text-white leading-relaxed">
                 "{VIVA_QUESTIONS[currentQ]}"
               </p>
             </div>
 
             {/* Audio capture — mic or upload */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-8">
-              <p className="text-lg text-gray-300 font-medium">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] space-y-8">
+              <p className="text-lg text-gray-700 dark:text-gray-300 font-medium">
                 {processing
                   ? "Analysing your answer…"
                   : audioBlob
@@ -188,7 +188,7 @@ const VivaSimulation = () => {
                 <button
                   onClick={submitAnswer}
                   disabled={!audioBlob || processing}
-                  className="px-8 py-4 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:-translate-y-1"
+                  className="px-8 py-4 bg-green-600 hover:bg-green-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-gray-900 dark:text-white rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] hover:-translate-y-1"
                 >
                   {processing
                     ? "Analysing..."
@@ -198,7 +198,7 @@ const VivaSimulation = () => {
                 </button>
                 <button
                   onClick={resetSession}
-                  className="px-8 py-4 bg-transparent border border-gray-700 hover:bg-gray-800 text-red-400 hover:text-red-300 rounded-xl font-bold transition-all"
+                  className="px-8 py-4 bg-transparent border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 text-red-400 hover:text-red-300 rounded-xl font-bold transition-all"
                 >
                   End Session
                 </button>
@@ -206,8 +206,8 @@ const VivaSimulation = () => {
             </div>
 
             {/* Live Performance Metrics (updates after each answer) */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
-              <h3 className="text-xl font-bold text-gray-300 mb-2 flex items-center gap-2">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                 <span>📊</span> Last Answer Metrics
               </h3>
               <p className="text-gray-500 text-sm mb-6">Updates after you submit each answer.</p>
@@ -218,8 +218,8 @@ const VivaSimulation = () => {
                   { label: "Confidence",  key: "confidence_score", color: "text-purple-400"},
                   { label: "Filler Words",key: "filler_words",     color: "text-red-400",  noPercent: true },
                 ].map(({ label, key, color, noPercent }) => (
-                  <div key={key} className="bg-black/40 border border-gray-800 rounded-2xl p-6 text-center">
-                    <p className="text-gray-400 text-sm mb-2 uppercase tracking-wider font-semibold">{label}</p>
+                  <div key={key} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center">
+                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-2 uppercase tracking-wider font-semibold">{label}</p>
                     <p className={`text-4xl font-bold ${color}`}>
                       {liveMetrics[key]}
                       {!noPercent && liveMetrics[key] !== "-" && <span className="text-xl">%</span>}
@@ -240,8 +240,8 @@ const VivaSimulation = () => {
             <div className="bg-gradient-to-br from-green-500/10 to-transparent backdrop-blur-xl border border-green-500/20 rounded-3xl p-12 text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/10 rounded-full blur-[80px] -z-10" />
               <span className="text-7xl mb-6 block">🎓</span>
-              <h3 className="text-3xl font-bold text-white mb-2">Session Complete!</h3>
-              <p className="text-gray-400 text-lg">You answered all {TOTAL_QUESTIONS} questions. Here's how you did overall.</p>
+              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Session Complete!</h3>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">You answered all {TOTAL_QUESTIONS} questions. Here's how you did overall.</p>
             </div>
 
             {/* Overall average scores */}
@@ -252,28 +252,28 @@ const VivaSimulation = () => {
                 { label: "Avg Pace",        key: "pace",             color: "text-purple-400", emoji: "💎" },
                 { label: "Avg Fillers",     key: "filler_words",     color: "text-red-400",    emoji: "🛑", noPercent: true },
               ].map(({ label, key, color, emoji, noPercent }) => (
-                <div key={key} className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 text-center">
+                <div key={key} className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 text-center">
                   <p className="text-3xl mb-3">{emoji}</p>
                   <p className={`text-4xl font-bold ${color} mb-2`}>
                     {avgScore(key)}{!noPercent && <span className="text-xl">%</span>}
                   </p>
-                  <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">{label}</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm font-bold uppercase tracking-widest">{label}</p>
                 </div>
               ))}
             </div>
 
             {/* Per-question breakdown */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10">
               <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
                 <span>📜</span> Question-by-Question Breakdown
               </h3>
               <div className="space-y-6">
                 {allMetrics.map((entry, i) => (
-                  <div key={i} className="border border-gray-800 rounded-2xl p-6 bg-black/20">
+                  <div key={i} className="border border-gray-200 dark:border-gray-800 rounded-2xl p-6 bg-white dark:bg-black/20">
                     <p className="text-sm font-bold text-pink-400 uppercase tracking-widest mb-2">
                       Question {i + 1}
                     </p>
-                    <p className="text-white font-medium mb-4 italic">"{entry.question}"</p>
+                    <p className="text-gray-900 dark:text-white font-medium mb-4 italic">"{entry.question}"</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                       {[
                         { label: "Confidence", val: entry.metrics.confidence_score, color: "text-blue-400" },
@@ -281,7 +281,7 @@ const VivaSimulation = () => {
                         { label: "Pace",       val: entry.metrics.pace,             color: "text-purple-400" },
                         { label: "Fillers",    val: entry.metrics.filler_words,     color: "text-red-400", noPercent: true },
                       ].map(({ label, val, color, noPercent }) => (
-                        <div key={label} className="bg-gray-900 rounded-xl p-4">
+                        <div key={label} className="bg-gray-50 dark:bg-gray-900 rounded-xl p-4">
                           <p className="text-gray-500 text-xs uppercase font-bold mb-1">{label}</p>
                           <p className={`text-2xl font-bold ${color}`}>
                             {val ?? "-"}{!noPercent && val !== "-" && val != null && "%"}
@@ -298,7 +298,7 @@ const VivaSimulation = () => {
             <div className="flex gap-6 flex-wrap">
               <button
                 onClick={resetSession}
-                className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:-translate-y-1"
+                className="px-10 py-5 bg-pink-600 hover:bg-pink-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:-translate-y-1"
               >
                 Try Again
               </button>

@@ -170,14 +170,14 @@ const DailyTask = () => {
         <div className="flex items-start justify-between gap-6 flex-wrap">
           <div>
             <h2 className="text-4xl font-extrabold tracking-tight">Daily Task</h2>
-            <p className="text-gray-400 mt-2">Complete today's speaking challenge to build your streak.</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">Complete today's speaking challenge to build your streak.</p>
           </div>
 
           {/* Streak Badge */}
           <div className="flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-red-500/10 border border-orange-500/30 rounded-2xl px-6 py-4 transition-transform hover:scale-105 duration-300">
             <span className="text-3xl">🔥</span>
             <div>
-              <p className="text-2xl font-bold text-white">{streak} Days</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white">{streak} Days</p>
               <p className="text-xs text-orange-400 font-semibold uppercase tracking-wider">Current Streak</p>
             </div>
           </div>
@@ -185,7 +185,7 @@ const DailyTask = () => {
 
         {/* Today's Task Card */}
         {phase !== "done" && (
-          <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10 relative overflow-hidden">
+          <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-[100px] -z-10" />
 
             {/* Task Meta */}
@@ -199,11 +199,11 @@ const DailyTask = () => {
               </span>
             </div>
 
-            <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-3">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
               <span>🎯</span> {todayTask.title}
             </h3>
 
-            <p className="text-gray-300 text-lg leading-relaxed mb-6">
+            <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-6">
               {todayTask.description}
             </p>
 
@@ -228,7 +228,7 @@ const DailyTask = () => {
             {audioBlob && phase === "idle" && (
               <button
                 onClick={analyseRecording}
-                className="mt-6 px-10 py-4 bg-green-600 hover:bg-green-500 text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] w-full md:w-auto"
+                className="mt-6 px-10 py-4 bg-green-600 hover:bg-green-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] w-full md:w-auto"
               >
                 ✅ Submit & Analyse
               </button>
@@ -250,8 +250,8 @@ const DailyTask = () => {
             {/* Success Header */}
             <div className="bg-gradient-to-br from-green-500/10 to-transparent border border-green-500/20 rounded-3xl p-10 text-center">
               <span className="text-6xl block mb-4">🎉</span>
-              <h3 className="text-3xl font-bold text-white mb-2">Task Complete!</h3>
-              <p className="text-gray-400 mb-4">You successfully completed this daily task.</p>
+              <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Task Complete!</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">You successfully completed this daily task.</p>
             </div>
 
             {/* Score Cards */}
@@ -263,7 +263,7 @@ const DailyTask = () => {
                 { label: "Grammar",      val: ai.grammar_score,    color: "text-yellow-400", emoji: "📝" },
                 { label: "Filler Words", val: ai.filler_words,     color: "text-red-400",    emoji: "🛑", noPercent: true },
               ].map(({ label, val, color, emoji, noPercent }) => (
-                <div key={label} className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-2xl p-6 text-center hover:border-gray-600 transition-colors">
+                <div key={label} className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center hover:border-gray-600 transition-colors">
                   <p className="text-2xl mb-2">{emoji}</p>
                   <p className={`text-3xl font-bold ${color} mb-1`}>
                     {val ?? 0}{!noPercent && "%"}
@@ -274,13 +274,13 @@ const DailyTask = () => {
             </div>
 
             {/* AI Feedback */}
-            <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-8">
+            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
               <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2 mb-4">
                 <span>🧠</span> AI Coaching Insights
               </h4>
-              <p className="text-xl text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
-              <div className="mt-6 pt-6 border-t border-gray-800">
-                <p className="text-sm text-gray-400 font-medium tracking-wide">Audio Duration: <span className="text-white bg-gray-800 px-3 py-1 rounded-md">{fmtTime(audioDur)}</span></p>
+              <p className="text-xl text-gray-900 dark:text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium tracking-wide">Audio Duration: <span className="text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md">{fmtTime(audioDur)}</span></p>
               </div>
             </div>
 
@@ -288,13 +288,13 @@ const DailyTask = () => {
             <div className="flex gap-4 flex-wrap">
               <a
                 href="/progress"
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
               >
                 View Full Progress →
               </a>
               <button
                 onClick={reset}
-                className="px-8 py-4 border border-gray-700 hover:bg-gray-800 text-white rounded-xl font-bold transition-all"
+                className="px-8 py-4 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl font-bold transition-all"
               >
                 Try Another Routine
               </button>
@@ -303,7 +303,7 @@ const DailyTask = () => {
         )}
 
         {/* ── Task History Using Actual API Data ── */}
-        <div className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-3xl p-10">
+        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10">
           <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 tracking-tight">
             <span>📅</span> Your Daily Challenge History
           </h3>
@@ -312,16 +312,16 @@ const DailyTask = () => {
               taskHistory.slice(0, 5).map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-6 bg-black/40 rounded-2xl border border-gray-800 hover:border-blue-500/50 transition-all duration-300 group"
+                  className="flex items-center justify-between p-6 bg-white dark:bg-black/40 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-blue-500/50 transition-all duration-300 group"
                 >
                   <div className="flex items-start md:items-center flex-col md:flex-row gap-4">
                     <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold text-xl shadow-[0_0_10px_rgba(34,197,94,0.2)]">
                       ✓
                     </div>
                     <div>
-                      <p className="font-semibold text-white text-lg group-hover:text-blue-400 transition-colors">{item.topic}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white text-lg group-hover:text-blue-400 transition-colors">{item.topic}</p>
                       <div className="flex items-center gap-3 mt-1.5 opacity-80">
-                         <p className="text-xs text-gray-400 font-mono bg-gray-800/80 px-2 py-0.5 rounded uppercase font-bold tracking-widest">{new Date(item.date).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}</p>
+                         <p className="text-xs text-gray-600 dark:text-gray-400 font-mono bg-gray-100 dark:bg-gray-800/80 px-2 py-0.5 rounded uppercase font-bold tracking-widest">{new Date(item.date).toLocaleDateString(undefined, {month: 'short', day: 'numeric', year: 'numeric'})}</p>
                          <p className="text-xs text-blue-400 font-bold uppercase tracking-widest bg-blue-500/10 px-2 py-0.5 rounded">
                             Score: {item.confidence_score}%
                          </p>
@@ -336,13 +336,13 @@ const DailyTask = () => {
                 </div>
               ))
             ) : (
-                <div className="text-center p-8 bg-black/20 rounded-2xl border border-gray-800 border-dashed">
+                <div className="text-center p-8 bg-white dark:bg-black/20 rounded-2xl border border-gray-200 dark:border-gray-800 border-dashed">
                     <p className="text-gray-500 font-medium">No previous daily tasks found. Start your streak today!</p>
                 </div>
             )}
           </div>
           {taskHistory.length > 5 && (
-              <a href="/progress" className="mt-6 inline-block text-blue-400 font-semibold hover:text-white transition-colors">See all history →</a>
+              <a href="/progress" className="mt-6 inline-block text-blue-400 font-semibold hover:text-gray-900 dark:text-white transition-colors">See all history →</a>
           )}
         </div>
 

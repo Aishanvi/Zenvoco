@@ -167,14 +167,14 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
 
       {/* Mode toggle tabs */}
       {phase !== "ready" && (
-        <div className="flex gap-2 p-1 bg-gray-900 border border-gray-800 rounded-2xl w-fit">
+        <div className="flex gap-2 p-1 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl w-fit">
           <button
             onClick={() => switchMode("record")}
             disabled={disabled || phase === "recording"}
             className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               mode === "record"
-                ? "bg-blue-600 text-white shadow-lg"
-                : "text-gray-400 hover:text-white"
+                ? "bg-blue-600 text-gray-900 dark:text-white shadow-lg"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white"
             }`}
           >
             🎤 Record Mic
@@ -184,8 +184,8 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
             disabled={disabled || phase === "recording"}
             className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
               mode === "upload"
-                ? "bg-blue-600 text-white shadow-lg"
-                : "text-gray-400 hover:text-white"
+                ? "bg-blue-600 text-gray-900 dark:text-white shadow-lg"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white"
             }`}
           >
             📂 Upload File
@@ -232,14 +232,14 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
               className={`relative z-10 ${micSize} rounded-full flex items-center justify-center transition-all duration-300 shadow-2xl ${
                 phase === "recording"
                   ? "bg-red-600 scale-110 shadow-[0_0_50px_rgba(220,38,38,0.5)]"
-                  : "bg-gray-800 border border-gray-700 hover:bg-gray-700 hover:border-gray-500 hover:scale-105"
+                  : "bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 hover:bg-gray-700 hover:border-gray-500 hover:scale-105"
               }`}
             >
               🎤
             </button>
           </div>
 
-          <p className="text-gray-400 text-sm text-center">
+          <p className="text-gray-600 dark:text-gray-400 text-sm text-center">
             {phase === "idle"
               ? "Click the microphone to start recording"
               : "Click again to stop"}
@@ -257,7 +257,7 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
           className={`border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 ${
             dragOver
               ? "border-blue-400 bg-blue-500/10 scale-[1.01]"
-              : "border-gray-700 hover:border-blue-500/50 hover:bg-blue-500/5"
+              : "border-gray-300 dark:border-gray-700 hover:border-blue-500/50 hover:bg-blue-500/5"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         >
           <input
@@ -268,13 +268,13 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
             className="hidden"
           />
           <div className="text-5xl mb-4">📂</div>
-          <p className="text-white font-semibold text-lg mb-2">
+          <p className="text-gray-900 dark:text-white font-semibold text-lg mb-2">
             {dragOver ? "Drop it here!" : "Drag & drop an audio file"}
           </p>
-          <p className="text-gray-400 text-sm mb-4">or click to browse</p>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">or click to browse</p>
           <div className="flex flex-wrap gap-2 justify-center">
             {["MP3", "WAV", "WEBM", "OGG", "M4A", "AAC"].map((ext) => (
-              <span key={ext} className="text-xs bg-gray-800 border border-gray-700 text-gray-400 px-3 py-1 rounded-full font-mono">
+              <span key={ext} className="text-xs bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 px-3 py-1 rounded-full font-mono">
                 .{ext.toLowerCase()}
               </span>
             ))}
@@ -292,13 +292,13 @@ const AudioInput = ({ onAudioReady, onReset, disabled = false, compact = false }
             </div>
             <div>
               <p className="text-green-400 font-semibold text-sm">Audio ready</p>
-              <p className="text-gray-400 text-sm truncate max-w-xs">{fileName}</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm truncate max-w-xs">{fileName}</p>
             </div>
           </div>
           {!disabled && (
             <button
               onClick={handleReset}
-              className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 px-3 py-1.5 rounded-lg transition-all shrink-0"
+              className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 hover:border-gray-500 px-3 py-1.5 rounded-lg transition-all shrink-0"
             >
               ↺ Clear & redo
             </button>
