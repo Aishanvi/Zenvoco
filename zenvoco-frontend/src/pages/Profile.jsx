@@ -50,32 +50,30 @@ const Profile = () => {
         </div>
 
         {/* Profile Header */}
+        <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden shadow-sm">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#0ea5e9]/10 rounded-full blur-[80px] pointer-events-none"></div>
 
-        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 flex items-center gap-8 relative overflow-hidden">
-
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
-
-          <div className="w-28 h-28 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 p-1 shadow-[0_0_30px_rgba(59,130,246,0.3)]">
-            <div className="w-full h-full bg-gray-50 dark:bg-gray-900 rounded-full flex items-center justify-center text-4xl font-bold text-gray-900 dark:text-white">
+          <div className="w-28 h-28 shrink-0 rounded-full bg-gradient-to-br from-[#0ea5e9] to-[#2dd4bf] p-1 shadow-[0_4px_14px_0_rgb(14,165,233,0.39)]">
+            <div className="w-full h-full bg-white dark:bg-gray-900 rounded-full flex items-center justify-center text-4xl font-black text-slate-800 dark:text-white">
               {profile.name?.charAt(0) || "U"}
             </div>
           </div>
 
-          <div className="flex-1">
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-3xl font-black text-[#0f172a] dark:text-white mb-1 tracking-tight">
               {profile.name || "User"}
             </h3>
 
-            <p className="text-gray-600 dark:text-gray-400 mb-3">
+            <p className="text-slate-500 font-medium mb-4">
               {profile.email || "email@example.com"}
             </p>
 
-            <span className="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-4 py-1.5 rounded-full text-sm font-semibold tracking-wide">
+            <span className="bg-[#0ea5e9]/10 text-[#0ea5e9] border border-[#0ea5e9]/20 px-4 py-1.5 rounded-full text-sm font-bold tracking-wide">
               {profile.purpose || "Communication Improvement"}
             </span>
           </div>
 
-          <button className="px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl transition-all font-medium border border-gray-300 dark:border-gray-700">
+          <button className="px-6 py-3 bg-white hover:bg-slate-50 dark:bg-gray-800 text-slate-700 dark:text-white rounded-full transition-all font-bold border border-[#0ea5e9]/20 shadow-sm mt-4 md:mt-0">
             Edit Profile
           </button>
 
@@ -86,17 +84,15 @@ const Profile = () => {
         {/* Logout */}
 
         <div className="pt-6">
-
           <button
             onClick={() => {
               localStorage.removeItem("token");
               navigate("/");
             }}
-            className="px-8 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 rounded-xl font-bold transition-all w-full md:w-auto"
+            className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white rounded-full font-bold transition-all w-full md:w-auto shadow-[0_4px_14px_0_rgb(239,68,68,0.39)] transform hover:-translate-y-0.5"
           >
             Sign Out
           </button>
-
         </div>
 
       </div>

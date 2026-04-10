@@ -151,7 +151,7 @@ const GuidedPractice = () => {
           {selectedTopic && (
             <button
               onClick={() => { setSelectedTopic(null); setAudioBlob(null); }}
-              className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-xl transition-all"
+              className="text-sm text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:text-white border border-[#0ea5e9]/20 bg-white/50 backdrop-blur-md px-5 py-2.5 rounded-full shadow-sm hover:shadow-md transition-all font-medium"
             >
               ← Change Topic
             </button>
@@ -228,7 +228,7 @@ const GuidedPractice = () => {
             </div>
 
             {/* Audio capture */}
-            <div className={`bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 space-y-8 ${(selectedTopic.isCustom && !customQuestion.trim()) ? "opacity-50 pointer-events-none" : ""}`}>
+            <div className={`bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 space-y-8 shadow-sm ${(selectedTopic.isCustom && !customQuestion.trim()) ? "opacity-50 pointer-events-none" : ""}`}>
               <AudioInput
                 onAudioReady={handleAudioReady}
                 onReset={() => { setAudioBlob(null); setAudioDuration(0); }}
@@ -237,10 +237,10 @@ const GuidedPractice = () => {
 
               {/* Submit / spinner */}
               {audioBlob && !uploading && (
-                <div className="flex gap-4 flex-wrap">
+                <div className="flex gap-4 flex-wrap mt-4">
                   <button
                     onClick={submitAudio}
-                    className="px-10 py-4 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+                    className="px-10 py-4 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-full font-bold text-lg transition-all shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
                   >
                     ✅ Finish & Analyse
                   </button>
@@ -256,12 +256,12 @@ const GuidedPractice = () => {
             </div>
 
             {/* Tips panel */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
-              <h4 className="text-sm uppercase tracking-widest text-gray-500 font-bold mb-4">💡 Quick Tips</h4>
-              <ul className="grid md:grid-cols-3 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Speak in complete sentences — avoid trailing off.</span></li>
-                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Use pauses intentionally instead of filler words.</span></li>
-                <li className="flex items-start gap-2"><span className="text-blue-400 mt-0.5">✦</span><span>Structure your answer: Context → Action → Result.</span></li>
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-lg border border-[#0ea5e9]/10 rounded-3xl p-6 shadow-sm">
+              <h4 className="text-sm uppercase tracking-widest text-[#475569] font-black mb-4">💡 QUICK TIPS</h4>
+              <ul className="grid md:grid-cols-3 gap-4 text-sm text-slate-700 dark:text-gray-400 font-medium">
+                <li className="flex items-start gap-2"><span className="text-[#0ea5e9] mt-0.5 font-bold">✦</span><span>Speak in complete sentences — avoid trailing off.</span></li>
+                <li className="flex items-start gap-2"><span className="text-[#0ea5e9] mt-0.5 font-bold">✦</span><span>Use pauses intentionally instead of filler words.</span></li>
+                <li className="flex items-start gap-2"><span className="text-[#0ea5e9] mt-0.5 font-bold">✦</span><span>Structure your answer: Context → Action → Result.</span></li>
               </ul>
             </div>
           </>

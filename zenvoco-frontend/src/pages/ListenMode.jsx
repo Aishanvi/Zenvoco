@@ -143,32 +143,34 @@ const ListenMode = () => {
               <button
                 key={ex.id}
                 onClick={() => selectExample(ex.id)}
-                className={`block w-full text-left px-5 py-5 rounded-2xl transition-all duration-300 border ${selectedId === ex.id
-                  ? "bg-blue-600 border-blue-500 text-gray-900 dark:text-white font-bold shadow-lg"
-                  : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-white"
+                className={`block w-full text-left px-5 py-5 rounded-3xl transition-all duration-300 border ${selectedId === ex.id
+                  ? "bg-[#2563eb] border-[#1d4ed8] text-white font-bold shadow-[0_8px_30px_rgb(37,99,235,0.3)]"
+                  : "bg-white/70 dark:bg-gray-900/60 backdrop-blur-md border-[#0ea5e9]/10 dark:border-gray-800 text-slate-700 dark:text-gray-300 hover:border-[#0ea5e9]/30 hover:shadow-md"
                   }`}
               >
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-2xl">{ex.icon}</span>
-                  <span className="font-semibold">{ex.label}</span>
+                  <span className="font-semibold text-lg">{ex.label}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${ex.badgeColor}`}>
+                  <span className={`text-xs px-3 py-1 rounded-full font-bold border ${ex.badgeColor} ${selectedId === ex.id ? 'bg-black/10 border-transparent text-white' : ''}`}>
                     {ex.badge}
                   </span>
-                  <span className="text-xs text-gray-500">⏱ {ex.duration}</span>
+                  <span className={`text-xs font-semibold flex items-center gap-1 ${selectedId === ex.id ? 'text-blue-100' : 'text-slate-500'}`}>
+                    ⏱ {ex.duration}
+                  </span>
                 </div>
               </button>
             ))}
 
             {/* Legend */}
-            <div className="mt-4 bg-gray-50 dark:bg-gray-900/60 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 space-y-2">
-              <p className="text-xs uppercase tracking-widest text-gray-500 font-bold mb-3">After Listening</p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                ✦ Study the insight breakdown to understand <em>why</em> each technique works.
+            <div className="mt-4 bg-white/70 backdrop-blur-lg dark:bg-gray-900/60 border border-[#0ea5e9]/10 dark:border-gray-800 rounded-3xl p-6 space-y-3 shadow-sm">
+              <p className="text-sm tracking-widest text-[#475569] font-black mb-3">AFTER LISTENING</p>
+              <p className="text-sm text-slate-600 dark:text-gray-400 leading-relaxed font-medium">
+                ✦ Study the insight breakdown to understand <em className="text-slate-800 dark:text-gray-300">why</em> each technique works.
               </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                ✦ Then go to <strong className="text-gray-900 dark:text-white">Guided Practice</strong> and try it yourself.
+              <p className="text-sm text-slate-600 dark:text-gray-400 leading-relaxed font-medium">
+                ✦ Then go to <strong className="text-[#0ea5e9] dark:text-[#0ea5e9]">Guided Practice</strong> and try it yourself.
               </p>
             </div>
           </div>
@@ -188,15 +190,15 @@ const ListenMode = () => {
             />
 
             {/* Example Info Card */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[60px] -z-10" />
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 relative overflow-hidden shadow-sm">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[#0ea5e9]/10 rounded-full blur-[60px] -z-10" />
               <div className="flex items-start gap-4 mb-4">
                 <span className="text-4xl">{example.icon}</span>
                 <div className="flex-1">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{example.label}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">{example.description}</p>
+                  <h3 className="text-2xl font-black text-[#0f172a] dark:text-white tracking-tight">{example.label}</h3>
+                  <p className="text-slate-600 dark:text-gray-400 text-sm mt-1 font-medium">{example.description}</p>
                 </div>
-                <span className={`text-xs px-3 py-1 rounded-full font-semibold border ${example.badgeColor}`}>
+                <span className={`text-xs px-3 py-1 rounded-full font-bold border ${example.badgeColor}`}>
                   {example.badge}
                 </span>
               </div>
@@ -204,7 +206,7 @@ const ListenMode = () => {
               {/* Key Techniques Tags */}
               <div className="flex flex-wrap gap-2 mt-4">
                 {example.keyTechniques.map((t, i) => (
-                  <span key={i} className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded-xl font-medium">
+                  <span key={i} className="bg-white/50 dark:bg-gray-800 border border-[#0ea5e9]/5 dark:border-gray-700 text-slate-700 dark:text-gray-300 text-xs px-3 py-1.5 rounded-full font-bold shadow-sm">
                     {t}
                   </span>
                 ))}
@@ -212,15 +214,15 @@ const ListenMode = () => {
             </div>
 
             {/* Audio Player */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
-              <h4 className="text-sm uppercase tracking-widest font-bold text-blue-400 mb-6 flex items-center gap-2">
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 shadow-sm">
+              <h4 className="text-sm uppercase tracking-widest font-black text-[#0f172a] mb-6 flex items-center gap-2">
                 <span>🎧</span> Audio Simulation
               </h4>
 
               <div className="flex items-center gap-6">
                 <button
                   onClick={togglePlayback}
-                  className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all shadow-lg shrink-0 ${isPlaying ? "bg-red-600 hover:bg-red-500" : "bg-blue-600 hover:bg-blue-500"
+                  className={`w-16 h-16 rounded-full flex items-center justify-center text-2xl transition-all shadow-lg shrink-0 text-white ${isPlaying ? "bg-red-500 hover:bg-red-600" : "bg-[#0284c7] hover:bg-[#0369a1]"
                     }`}
                 >
                   {isPlaying ? "⏸" : progress >= 100 ? "↺" : "▶"}
@@ -228,7 +230,7 @@ const ListenMode = () => {
 
                 <div className="flex-1 space-y-3">
                   <div
-                    className="h-2.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden cursor-pointer"
+                    className="h-2 w-full bg-slate-200 dark:bg-gray-800 rounded-full overflow-hidden cursor-pointer"
                     onClick={(e) => {
                       if (!audioRef.current || !audioRef.current.duration) return;
 
@@ -240,72 +242,72 @@ const ListenMode = () => {
                     }}
                   >
                     <div
-                      className="h-full bg-blue-500 rounded-full"
+                      className="h-full bg-[#0284c7] rounded-full"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
 
-                  <div className="flex justify-between text-xs text-gray-500 font-medium">
+                  <div className="flex justify-between text-xs text-slate-500 font-bold">
                     <span>{elMin}:{elSec}</span>
                     <span>{example.duration}</span>
                   </div>
                 </div>
 
-                <button onClick={resetPlayback} className="text-gray-500 hover:text-gray-900 dark:text-white transition-colors text-sm font-medium shrink-0">
-                  ↺
+                <button onClick={resetPlayback} className="text-slate-500 hover:text-slate-800 dark:text-white transition-colors text-sm font-bold shrink-0">
+                  ↺ Restart
                 </button>
               </div>
             </div>
 
             {/* Transcript */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2">
+                <h4 className="text-sm uppercase tracking-widest font-black text-[#2dd4bf] flex items-center gap-2">
                   <span>📝</span> Transcript
                 </h4>
                 <button
                   onClick={() => setShowTranscript((v) => !v)}
-                  className="text-xs text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 px-3 py-1.5 rounded-lg transition-all"
+                  className="text-xs text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:text-white border border-[#0ea5e9]/20 dark:border-gray-700 bg-white/50 px-3 py-1.5 rounded-lg transition-all font-bold"
                 >
                   {showTranscript ? "Hide" : "Show"}
                 </button>
               </div>
 
               {showTranscript ? (
-                <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
+                <div className="bg-white/50 dark:bg-black/40 border border-[#0ea5e9]/5 dark:border-gray-800 rounded-2xl p-6 text-slate-700 dark:text-gray-300 leading-relaxed text-lg font-medium shadow-inner">
                   "{example.transcript}"
                 </div>
               ) : (
-                <div className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-gray-600 text-center select-none">
-                  <p>Listen to the example first, or click <strong className="text-gray-600 dark:text-gray-400">Show</strong> to reveal the transcript.</p>
+                <div className="bg-white/50 dark:bg-black/40 border border-[#0ea5e9]/5 dark:border-gray-800 rounded-2xl p-6 text-slate-600 text-center select-none shadow-inner">
+                  <p className="font-medium">Listen to the example first, or click <strong className="text-slate-800 dark:text-gray-400">Show</strong> to reveal the transcript.</p>
                 </div>
               )}
             </div>
 
             {/* Speaking Insights */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
-              <h4 className="text-sm uppercase tracking-widest font-bold text-purple-400 flex items-center gap-2 mb-6">
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 shadow-sm">
+              <h4 className="text-sm uppercase tracking-widest font-black text-[#8b5cf6] flex items-center gap-2 mb-6">
                 <span>✨</span> Technique Breakdown
               </h4>
               <div className="grid md:grid-cols-2 gap-4">
-                {example.insights.map(({ label, text, color }, i) => (
-                  <div key={i} className="bg-white dark:bg-black/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
-                    <p className={`font-bold text-sm mb-2 ${color}`}>{label}</p>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">{text}</p>
+                {example.insights.map(({ label, text }, i) => (
+                  <div key={i} className="bg-white/50 dark:bg-black/40 border border-[#0ea5e9]/5 dark:border-gray-800 rounded-2xl p-5 shadow-sm">
+                    <p className={`font-black text-sm mb-2 text-[#0ea5e9]`}>{label}</p>
+                    <p className="text-slate-600 dark:text-gray-400 text-sm leading-relaxed font-medium">{text}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* CTA */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap">
+            <div className="bg-gradient-to-r from-[#0ea5e9]/5 to-transparent border border-[#0ea5e9]/10 dark:border-gray-800 rounded-2xl p-6 flex items-center justify-between gap-6 flex-wrap shadow-sm">
               <div>
-                <p className="font-semibold text-gray-900 dark:text-white">Now try it yourself</p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Apply this technique in a Guided Practice session and get AI feedback.</p>
+                <p className="font-black text-slate-800 dark:text-white tracking-tight text-lg">Now try it yourself</p>
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1 font-medium">Apply this technique in a Guided Practice session and get AI feedback.</p>
               </div>
               <a
                 href="/practice"
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold transition-all shrink-0 shadow-lg shadow-blue-600/20"
+                className="px-8 py-4 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-full font-bold transition-all shrink-0 shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
               >
                 Go to Practice →
               </a>

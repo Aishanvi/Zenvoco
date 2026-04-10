@@ -18,37 +18,37 @@ const Results = () => {
 
         <div className="grid grid-cols-3 gap-6">
 
-          <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl text-center">
-            <p className="text-3xl font-bold text-blue-400">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 p-6 rounded-3xl text-center shadow-sm">
+            <p className="text-3xl font-black text-[#0ea5e9]">
               {data.ai_evaluation?.confidence_score || 0}%
             </p>
-            <p className="text-gray-600 dark:text-gray-400">Confidence</p>
+            <p className="text-slate-600 dark:text-gray-400 font-medium">Confidence</p>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl text-center">
-            <p className="text-3xl font-bold text-green-400">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 p-6 rounded-3xl text-center shadow-sm">
+            <p className="text-3xl font-black text-[#2dd4bf]">
               {data.ai_evaluation?.speech_clarity || 0}%
             </p>
-            <p className="text-gray-600 dark:text-gray-400">Fluency</p>
+            <p className="text-slate-600 dark:text-gray-400 font-medium">Fluency</p>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl text-center">
-            <p className="text-3xl font-bold text-purple-400">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 p-6 rounded-3xl text-center shadow-sm">
+            <p className="text-3xl font-black text-[#8b5cf6]">
               {data.ai_evaluation?.pace || "Normal"}
             </p>
-            <p className="text-gray-600 dark:text-gray-400">Speech Rate</p>
+            <p className="text-slate-600 dark:text-gray-400 font-medium">Speech Rate</p>
           </div>
 
         </div>
 
-        <div className="bg-gray-50 dark:bg-gray-900 p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-3">AI Feedback</h3>
-          <p className="text-gray-700 dark:text-gray-300">{data.ai_evaluation?.ai_feedback || "No feedback available."}</p>
+        <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 p-8 rounded-3xl shadow-sm">
+          <h3 className="text-xl font-black mb-3 text-[#0f172a] dark:text-white">AI Feedback</h3>
+          <p className="text-slate-700 dark:text-gray-300 font-medium">{data.ai_evaluation?.ai_feedback || "No feedback available."}</p>
         </div>
 
         <Link
           to="/practice"
-          className="inline-block bg-blue-600 px-6 py-3 rounded-xl font-bold"
+          className="inline-block px-10 py-5 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-full font-bold transition-all shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
         >
           Try Another Session
         </Link>

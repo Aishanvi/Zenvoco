@@ -152,21 +152,21 @@ const Progress = () => {
 
         {/* Summary Cards */}
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:border-blue-500/50 group">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:shadow-[0_8px_30px_rgb(14,165,233,0.15)] hover:border-[#0ea5e9]/30 shadow-sm group">
             <p className="text-gray-600 dark:text-gray-400 text-sm uppercase font-bold tracking-widest mb-4">Latest Confidence</p>
             <p className="text-5xl font-bold text-blue-500 flex items-center gap-2 group-hover:scale-105 transition-transform duration-300 origin-left">
               {progressData.latest_confidence_score || 0}<span className="text-3xl">%</span>
             </p>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:border-green-500/50 group">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:shadow-[0_8px_30px_rgb(34,197,94,0.15)] hover:border-green-500/30 shadow-sm group">
             <p className="text-gray-600 dark:text-gray-400 text-sm uppercase font-bold tracking-widest mb-4">Total Sessions</p>
             <p className="text-5xl font-bold text-green-500 group-hover:scale-105 transition-transform duration-300 origin-left">
               {progressData.total_sessions || 0}
             </p>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:border-purple-500/50 group">
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 hover:-translate-y-1 transition-all hover:shadow-[0_8px_30px_rgb(168,85,247,0.15)] hover:border-purple-500/30 shadow-sm group">
             <p className="text-gray-600 dark:text-gray-400 text-sm uppercase font-bold tracking-widest mb-4">Avg Duration</p>
             <p className="text-5xl font-bold text-purple-500 flex items-end gap-2 group-hover:scale-105 transition-transform duration-300 origin-left">
               {progressData.avg_duration ? Math.floor(progressData.avg_duration / 60) : 0}<span className="text-xl text-gray-600 dark:text-gray-400 mb-1">m</span> {progressData.avg_duration ? progressData.avg_duration % 60 : 0}<span className="text-xl text-gray-600 dark:text-gray-400 mb-1">s</span>
@@ -175,7 +175,7 @@ const Progress = () => {
         </div>
 
         {/* Actual Chart Section */}
-        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 relative overflow-hidden">
+        <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 relative overflow-hidden shadow-sm">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
           <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
             <span>📈</span> Confidence Trend Across Sessions
@@ -194,7 +194,7 @@ const Progress = () => {
         </div>
 
         {/* Practice History Table */}
-        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10">
+        <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 shadow-sm">
           <h3 className="text-2xl font-bold mb-8 flex items-center gap-3">
             <span>📜</span> Practice History
           </h3>
@@ -212,9 +212,9 @@ const Progress = () => {
               <tbody className="text-gray-700 dark:text-gray-300">
                 {timeline.length > 0 ? (
                   timeline.slice().reverse().map((session, i) => (
-                    <tr key={i} className="border-b border-gray-200 dark:border-gray-800/50 hover:bg-white dark:bg-black/40 transition-colors group">
-                      <td className="py-5 font-medium px-4 text-gray-600 dark:text-gray-400">{new Date(session.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                      <td className="py-5 text-gray-200 font-medium max-w-sm truncate px-4 group-hover:text-blue-400 transition-colors" title={session.topic}>
+                    <tr key={i} className="border-b border-[#0ea5e9]/5 dark:border-gray-800/50 hover:bg-white/60 dark:bg-black/40 transition-colors group">
+                      <td className="py-5 font-bold px-4 text-slate-700 dark:text-gray-300">{new Date(session.date).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                      <td className="py-5 text-slate-800 font-semibold max-w-sm truncate px-4 group-hover:text-[#0ea5e9] transition-colors" title={session.topic}>
                         {session.topic || "Practice Session"}
                       </td>
                       <td className="py-5 px-4 block sm:table-cell">

@@ -39,16 +39,16 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-900/20 via-black to-black relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-transparent relative overflow-hidden">
 
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px]"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[120px]"></div>
 
-      <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl p-10 rounded-3xl border border-gray-200 dark:border-gray-800 w-full max-w-md relative z-10">
+      <div className="bg-white/80 dark:bg-gray-900/50 backdrop-blur-xl p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-[#0ea5e9]/10 dark:border-gray-800 w-full max-w-md relative z-10">
 
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back to <span className="text-blue-500">Zenvoco</span>
+          <h2 className="text-4xl font-black text-[#0f172a] dark:text-white tracking-tight">
+            Welcome back to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-[#2dd4bf]">Zenvoco</span>
           </h2>
           <p className="text-gray-600 dark:text-gray-400 text-sm">Log in to continue your training.</p>
         </div>
@@ -63,7 +63,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full p-4 bg-white dark:bg-black/50 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+              className="w-full p-4 bg-white/50 dark:bg-black/50 border border-[#0ea5e9]/20 dark:border-gray-800 rounded-xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-colors shadow-inner"
             />
           </div>  
 
@@ -79,13 +79,13 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full p-4 bg-white dark:bg-black/50 border border-gray-200 dark:border-gray-800 rounded-xl text-gray-900 dark:text-white placeholder-gray-600 focus:outline-none focus:border-blue-500"
+              className="w-full p-4 bg-white/50 dark:bg-black/50 border border-[#0ea5e9]/20 dark:border-gray-800 rounded-xl text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9] transition-colors shadow-inner"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-gray-900 dark:text-white p-4 rounded-xl font-semibold hover:bg-blue-500 transition"
+            className="w-full bg-[#0284c7] text-white p-4 rounded-full font-bold hover:bg-[#0369a1] transition-all shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
           >
             Sign In
           </button>

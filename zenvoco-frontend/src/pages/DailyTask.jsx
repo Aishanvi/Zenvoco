@@ -185,8 +185,8 @@ const DailyTask = () => {
 
         {/* Today's Task Card */}
         {phase !== "done" && (
-          <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-[100px] -z-10" />
+          <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 relative overflow-hidden shadow-sm">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-[#0ea5e9]/10 rounded-full blur-[100px] -z-10" />
 
             {/* Task Meta */}
             <div className="flex items-center gap-4 mb-6 flex-wrap">
@@ -228,7 +228,7 @@ const DailyTask = () => {
             {audioBlob && phase === "idle" && (
               <button
                 onClick={analyseRecording}
-                className="mt-6 px-10 py-4 bg-green-600 hover:bg-green-500 text-gray-900 dark:text-white rounded-xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] w-full md:w-auto"
+                className="mt-6 px-10 py-4 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-full font-bold text-lg transition-all shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5 w-full md:w-auto"
               >
                 ✅ Submit & Analyse
               </button>
@@ -261,26 +261,26 @@ const DailyTask = () => {
                 { label: "Fluency",      val: ai.speech_clarity,   color: "text-green-400",  emoji: "⚡" },
                 { label: "Pace",         val: ai.pace,             color: "text-purple-400", emoji: "💎" },
                 { label: "Grammar",      val: ai.grammar_score,    color: "text-yellow-400", emoji: "📝" },
-                { label: "Filler Words", val: ai.filler_words,     color: "text-red-400",    emoji: "🛑", noPercent: true },
+                { label: "Filler Words", val: ai.filler_words,     color: "text-[#f43f5e]",    emoji: "🛑", noPercent: true },
               ].map(({ label, val, color, emoji, noPercent }) => (
-                <div key={label} className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 text-center hover:border-gray-600 transition-colors">
+                <div key={label} className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-2xl p-6 text-center shadow-sm">
                   <p className="text-2xl mb-2">{emoji}</p>
-                  <p className={`text-3xl font-bold ${color} mb-1`}>
+                  <p className={`text-3xl font-black ${color} mb-1`}>
                     {val ?? 0}{!noPercent && "%"}
                   </p>
-                  <p className="text-gray-500 text-xs uppercase font-bold tracking-wider">{label}</p>
+                  <p className="text-slate-500 text-xs uppercase font-bold tracking-wider">{label}</p>
                 </div>
               ))}
             </div>
 
             {/* AI Feedback */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-8">
-              <h4 className="text-sm uppercase tracking-widest font-bold text-green-400 flex items-center gap-2 mb-4">
+            <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-8 shadow-sm">
+              <h4 className="text-sm uppercase tracking-widest font-black text-[#0ea5e9] flex items-center gap-2 mb-4">
                 <span>🧠</span> AI Coaching Insights
               </h4>
-              <p className="text-xl text-gray-900 dark:text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
-                <p className="text-sm text-gray-600 dark:text-gray-400 font-medium tracking-wide">Audio Duration: <span className="text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-md">{fmtTime(audioDur)}</span></p>
+              <p className="text-xl text-slate-800 dark:text-white font-medium leading-relaxed">{ai.ai_feedback}</p>
+              <div className="mt-6 pt-6 border-t border-[#0ea5e9]/10 dark:border-gray-800">
+                <p className="text-sm text-slate-600 dark:text-gray-400 font-medium tracking-wide">Audio Duration: <span className="text-slate-800 dark:text-white bg-white/80 dark:bg-gray-800 px-3 py-1 rounded-md border border-[#0ea5e9]/10">{fmtTime(audioDur)}</span></p>
               </div>
             </div>
 
@@ -288,13 +288,13 @@ const DailyTask = () => {
             <div className="flex gap-4 flex-wrap">
               <a
                 href="/progress"
-                className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-gray-900 dark:text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20"
+                className="px-8 py-4 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-full font-bold transition-all shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
               >
                 View Full Progress →
               </a>
               <button
                 onClick={reset}
-                className="px-8 py-4 border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl font-bold transition-all"
+                className="px-8 py-4 border border-slate-300 dark:border-gray-700 hover:bg-slate-100 dark:bg-gray-800 text-slate-700 dark:text-white rounded-full font-bold transition-all"
               >
                 Try Another Routine
               </button>
@@ -303,8 +303,8 @@ const DailyTask = () => {
         )}
 
         {/* ── Task History Using Actual API Data ── */}
-        <div className="bg-gray-50 dark:bg-gray-900/50 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl p-10">
-          <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 tracking-tight">
+        <div className="bg-white/70 dark:bg-gray-900/50 backdrop-blur-xl border border-[#0ea5e9]/10 rounded-3xl p-10 shadow-sm mt-8">
+          <h3 className="text-2xl font-black mb-8 flex items-center gap-3 tracking-tight text-[#0f172a] dark:text-white">
             <span>📅</span> Your Daily Challenge History
           </h3>
           <div className="space-y-4">
@@ -312,7 +312,7 @@ const DailyTask = () => {
               taskHistory.slice(0, 5).map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between p-6 bg-white dark:bg-black/40 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-blue-500/50 transition-all duration-300 group"
+                  className="flex items-center justify-between p-6 bg-white/60 dark:bg-black/40 rounded-2xl border border-[#0ea5e9]/10 dark:border-gray-800 hover:shadow-md hover:border-[#0ea5e9]/30 transition-all duration-300 group"
                 >
                   <div className="flex items-start md:items-center flex-col md:flex-row gap-4">
                     <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold text-xl shadow-[0_0_10px_rgba(34,197,94,0.2)]">

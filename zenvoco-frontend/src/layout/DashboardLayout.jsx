@@ -22,15 +22,15 @@ function DashboardLayout({ children }) {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-black dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] dark:from-blue-900/20 dark:via-black dark:to-black text-gray-900 dark:text-white relative overflow-hidden transition-colors duration-300">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#e8f4f8] via-[#eaf6fc] to-[#d6eff8] dark:bg-gray-900 dark:bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] dark:from-gray-900 dark:via-gray-950 dark:to-black text-slate-900 dark:text-white relative overflow-hidden transition-colors duration-300 font-sans">
 
       {/* Background Glows (visible primarily in dark mode) */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/10 dark:bg-blue-600/20 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/10 dark:bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
       {/* Mobile Header (Only on small screens) */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 p-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-blue-600 dark:text-blue-500">Zenvoco</h1>
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/80 backdrop-blur-xl border-b border-[#0ea5e9]/10 dark:border-gray-800 p-4 flex items-center justify-between">
+        <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-[#2dd4bf] tracking-tight">Zenvoco</h1>
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <button 
@@ -51,9 +51,9 @@ function DashboardLayout({ children }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-[70] w-64 bg-white/80 dark:bg-gray-900/50 backdrop-blur-xl border-r border-gray-200 dark:border-gray-800 p-6 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`fixed inset-y-0 left-0 z-[70] w-64 bg-white/60 dark:bg-gray-900/50 backdrop-blur-xl border-r border-[#0ea5e9]/10 dark:border-gray-800 p-6 flex flex-col transition-transform duration-300 lg:relative lg:translate-x-0 ${menuOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="lg:flex hidden justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-500">
+          <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#0ea5e9] to-[#2dd4bf] tracking-tight">
             Zenvoco
           </h1>
           <ThemeToggle />
@@ -66,8 +66,8 @@ function DashboardLayout({ children }) {
               key={item.name}
               to={item.path}
               className={`block px-4 py-3 rounded-xl transition-all duration-300 ${location.pathname === item.path
-                ? "bg-blue-600 text-white font-medium shadow-md shadow-blue-500/20"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-white"
+                ? "bg-[#0284c7] text-white font-bold shadow-[0_4px_14px_0_rgb(2,132,199,0.39)] transform hover:-translate-y-0.5"
+                : "text-slate-600 dark:text-gray-400 hover:bg-[#e0eff8]/50 dark:hover:bg-gray-800 font-medium hover:text-[#0ea5e9] dark:hover:text-white"
                 }`}
             >
               {item.name}
@@ -76,7 +76,7 @@ function DashboardLayout({ children }) {
         </nav>
 
         {/* Home Button added at the bottom */}
-        <Link to="/" className="mt-8 block px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-800 bg-gray-100/50 dark:bg-black/50 hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-all text-center">
+        <Link to="/" className="mt-8 block px-4 py-3 rounded-xl border border-[#0ea5e9]/20 dark:border-gray-800 bg-white/50 dark:bg-black/50 hover:bg-white dark:hover:bg-gray-800 text-slate-600 dark:text-gray-400 hover:text-[#0ea5e9] dark:hover:text-white transition-all text-center font-bold">
           Exit to Home
         </Link>
       </aside>
